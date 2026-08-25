@@ -1,152 +1,144 @@
-# Handoff — Tinycast lite strip + build tooling
+# Handoff — Mote (formerly Tinycast): finished RAM trims + full rename
 
-**User instruction (verbatim):** `/handoff`
+**User instruction (verbatim):** `commit and handoff`
 
-This file is documentation only — no importers, no API surface, no data schemas. It summarizes uncommitted work on branch `main` for the next agent.
+This file is documentation only — no importers, no API surface, no data schemas. It summarizes
+work completed and committed on branch `main` today, for the next agent or session.
 
 ## Goal
 
-1. **Investigate reported ~96 GB RAM usage** and understand what Activity Monitor / `ps` actually show.
-2. **Create a “lite” Tinycast** that keeps only the Settings launcher surface:
-   - Applications
-   - System Settings (pane jump)
-   - System Actions
-3. **Make daily dev simpler** — a `Makefile` with `make run`, `make test`, etc.
-4. **Optional follow-up:** reduce idle RAM further (user reports **~54 MB** after lite strip; already within budget).
+Continuing from the prior session's handoff (lite feature-strip + Makefile, left uncommitted):
 
-## Current progress
+1. Finish the three optional RAM-reduction items that prior session identified but didn't implement.
+2. Rename the product from "Tinycast" to "Mote," scoped to the app itself, its build tooling, and
+   its genuinely internal docs — explicitly NOT the real published GitHub repo, Homebrew tap/cask,
+   website, or legal docs, which stay "Tinycast" since this session didn't touch the actual release.
+3. Commit everything and hand off.
 
-### Lite strip — done (uncommitted)
+## Current progress — all done, committed
 
-Large feature trees **deleted** and wiring **slimmed**. Remaining features under `Tinycast/Features/`:
+Three commits on `main` (in order):
 
-| Feature | Role |
-| --- | --- |
-| `Launcher/` | App index, fuzzy search, favorites, visibility, aliases, settings panes |
-| `SystemActions/` | Volume, appearance, Bluetooth, Hide Others, Quit All, etc. |
-| `Settings/` | General, Applications, System Settings, System Actions, Permissions, About |
-| `HotKeys/` | Global palette shortcut, per-app hotkeys, HyperKey, double-tap |
-| `Onboarding/` | First-run flow (Raycast import removed) |
+1. **`d6474ca` — Strip Tinycast to launcher-only surface and add Makefile for daily dev.** This is
+   the prior session's lite-strip + Makefile work, committed today. Removes AI, Calculator,
+   Calendar, Clipboard, CustomCommands, Emoji, Extensions, FileSearch, Notes, Quicklinks, Snippets,
+   Uninstall, Updates, WindowManagement, Backup, and the Raycast-runtime script tree.
+2. **`f4b030e` — Rename Tinycast to Mote and trim idle RAM further.** The full rename (bundle ID
+   `com.mote.app`/`.dev`, Xcode project/target/scheme, `Mote/` source folder, `@main` struct,
+   internal `mote://` URL scheme, signing identity, every in-app string, build script, and internal
+   doc) plus the three RAM trims (below).
+3. **`fc90e95` — Rename tinycast.icon to mote.icon.** A follow-up catching one Icon Composer
+   resource folder the first rename's file sweep missed (auto-discovered by XcodeGen from its
+   folder path, not named anywhere in `project.yml`, so a plain grep for known file paths didn't
+   surface it).
 
-**Removed:** AI, Calculator, Calendar, Clipboard, CustomCommands, Emoji, Extensions, FileSearch, Notes, Quicklinks, Snippets, Uninstall, Updates, WindowManagement, Backup, `Scripts/raycast-runtime/`, emoji/currency generators, and most feature-specific tests/docs.
+**RAM trims (all 3 from the prior HANDOFF's "optional follow-up" list):**
+- Deferred `AppIndex.refresh()` to first palette open — it was running unconditionally at launch
+  in `AppCore.start()`, duplicating the re-scan `PaletteCoordinator.showPalette()` already does
+  every time the palette opens in launcher mode.
+- Lowered `IconCache`'s `NSCache` totalCostLimit caps: 32MB→16MB (full icon cache), 8MB→4MB
+  (fitted/result-list cache).
+- Made `LauncherRankingStore` read its on-disk JSON lazily (`ensureLoaded()`, gated by a
+  `hasLoaded` flag) instead of synchronously in `init()`, which ran at every app launch before.
 
-**Key rewires:**
+**Rename scope, precisely:**
+- IN scope: `Mote/` (the whole source tree), `Mote.xcodeproj`/`project.yml`, `Makefile`,
+  `.swiftlint.yml`, `Scripts/run-tests.sh`/`build-dmg.sh`/`format.sh`, `AGENTS.md`,
+  `docs/architecture.md`, `docs/development.md`, `docs/README.md`, `docs/release.md` (partial),
+  `docs/signing.md` (partial), `docs/standards.md`, `docs/testing.md`, `docs/ui.md` (one preserved
+  link exception, see below).
+- OUT of scope, deliberately untouched: `README.md`, `docs/features/*.md`, `website/`, `.github/`,
+  `CONTRIBUTING.md`, `CONTRIBUTOR_LICENSE_AND_FEEDBACK_AGREEMENT.md`, `SECURITY.md`, `NOTICE.md`.
+  Reason: these describe the real, currently-published Homebrew app and GitHub repo, which are
+  still literally named "tinycast" — this session didn't touch the actual release, tap, cask, or
+  Pages site, so their docs must keep saying "Tinycast" to stay accurate.
+- Specific preserved literals inside otherwise-renamed files: the GitHub repo `abue-ammar/tinycast`,
+  the Homebrew tap `abue-ammar/homebrew-tinycast` and cask names `tinycast`/`tinycast@beta`, the
+  Pages URL `https://abue-ammar.github.io/tinycast/`, the `<!-- tinycast:install -->` marker, all
+  four `AboutView.swift` `AboutLink` `detail`/`url` values for the "website"/"github" entries, and
+  `docs/ui.md`'s one link `features/palette.md#the-placeholder-is-tinycasts-not-the-fields` (points
+  at an out-of-scope, unrenamed heading). **`Scripts/release-notes.sh` was fully reverted to
+  untouched** — every default in it (`REPO`, `DISPLAY_NAME`, `BUNDLE_ID`, `CASK`, `MARKER`)
+  generates text describing the real current release, not this local rename.
 
-- `Tinycast/App/AppCore.swift` — only launcher-related coordinators/stores; lazy palette/settings/onboarding
-- `PaletteMode` — launcher only
-- `HotKeyAction` / `CommandID` — slimmed to lite commands
-- Settings sidebar — General, Applications, System Settings, System Actions, Permissions, About
-- `Info.plist` — camera/calendar/URL schemes removed
+**Verification, run directly (not just trusted from Codex):** `make build` → `** BUILD SUCCEEDED **`
+for `Mote Dev.app`; `./Scripts/run-tests.sh` → all 18 harnesses pass; `./Scripts/lint.sh` → clean
+(a handful of pre-existing warnings unrelated to naming). Confirmed running process footprint via
+`footprint <pid>`: ~59 MB, within the 40–80 MB normal budget in `docs/testing.md`.
 
-### Makefile — done (uncommitted)
-
-`Makefile` at repo root:
-
-| Target | Purpose |
-| --- | --- |
-| `make` / `make build` | `xcodegen generate` + Debug build → **Tinycast Dev.app** |
-| `make run` | Build and launch |
-| `make test` | `./Scripts/run-tests.sh` |
-| `make lint` | `./Scripts/lint.sh` |
-| `make install` | Brew-installs `xcodegen` + `swiftlint`; prints **manual** steps only |
-| `make identity` | Creates `Tinycast Self-Signed` cert |
-| `make open` | Open Xcode project |
-
-Sets `DEVELOPER_DIR` when `/Applications/Xcode.app` exists. Builds with `CODE_SIGNING_ALLOWED=NO` if no signing identity.
-
-### RAM — analyzed
-
-| Build | Idle-ish footprint |
-| --- | --- |
-| Full app (before strip) | ~139 MB `phys_footprint` (not 96 GB — that was virtual address space / VSZ) |
-| Lite strip (user report) | **~54 MB** |
-
-Project budget (`docs/testing.md`): **40–80 MB normal**, **100 MB hard ceiling**. Lite build is already compliant.
-
-Largest discretionary pools when palette is open: `IconCache` (32 MB + 8 MB NSCache caps in `Tinycast/Platform/Images/IconCache.swift`), decoded CG images. At idle, icon cache is empty.
-
-`AppCore.start()` eagerly runs `appIndex.refresh()` at launch (full app + Settings pane scan). Deferring until first palette open is the main remaining idle-RAM win (~2–8 MB) without removing features.
-
-### Docs — partially updated
-
-Updated: `AGENTS.md`, `README.md` (header/features), `docs/development.md`, `docs/architecture.md`, `docs/testing.md`, `docs/README.md`, some feature docs.
-
-**Still stale** (mention removed features):
-
-- `README.md` — Permissions / “Using it” sections still reference snippets, clipboard, custom commands
-- `docs/ui.md`, `docs/testing.md` — clipboard, calculator, emoji, extensions copy
-- `docs/development.md` — cache paths mention clipboard/calculator
-
-### Tests
-
-`Scripts/run-tests.sh` trimmed to **18 harnesses**.
-
-On the user’s machine (Aug 2026), **14 passed / 4 failed to compile**:
-
-```
-ranking-test, hover-arming-test, icon-cache-test, entry-icon-test
-```
-
-Failure: `@Observable` macro — `ObservationMacros.ObservableMacro` / `swift-plugin-server` malformed response. Likely broken or incomplete Xcode install (DEVELOPER_DIR may point at Xcode.app that isn’t fully set up). Harnesses that compile only pure Model layers pass.
-
-**Not verified on user machine:** full `xcodebuild` Debug/Release build, `./Scripts/lint.sh` (SwiftLint needs SourceKit/Xcode).
-
-### Git state
-
-- Branch: **`main`**
-- **All lite + Makefile changes are uncommitted** (hundreds of modified/deleted files)
-- User has **not** asked for a commit
+**Bundle-ID consequence:** the rename means any existing Accessibility grant for "Tinycast Dev" is
+orphaned (TCC grants are keyed by bundle ID). Next launch of "Mote Dev" needs a fresh grant; it
+should then persist across rebuilds as before, thanks to the stable self-signed identity
+(`Mote Self-Signed` — see `docs/signing.md`, `make identity`).
 
 ## What worked
 
-- **Feature deletion over shimming** — removing whole `Features/*` trees and rewiring `AppCore` is cleaner than feature flags.
-- **Lazy coordinators** in `AppCore` — palette window and settings UI not created until needed.
-- **RAM diagnosis** — use Activity Monitor “Memory” / `phys_footprint`, not `ps` VSZ. The 96 GB figure was virtual memory, not resident RAM.
-- **`make install` as guidance-only** — prints manual Xcode/signing steps instead of failing opaquely.
-- **Makefile `DEVELOPER_DIR` + unsigned fallback** — sensible defaults for local dev.
+- **Research before touching anything.** A `/research-team` dispatch (planner, architect,
+  docs-lookup, Explore, market-scout) established that the reported CLT-vs-Xcode build failure was
+  just a missing Xcode.app install, not a fundamental toolchain gap — and that neither dropping the
+  `@Observable` macro nor rewriting in another language was worth it. This correctly headed off a
+  request to consider a Rust rewrite before any code was touched.
+- **Splitting a big rename into a written plan + Codex execution + Claude review**, rather than one
+  agent doing everything. `docs/superpowers/plans/2026-08-25-ram-trim-and-rename.md` is the full
+  plan; Codex executed it task-by-task via the `codex-rescue` agent, stopping and reporting on every
+  ambiguity or failure rather than guessing past it.
+- **Verifying independently rather than trusting an agent's self-report.** Codex's sandbox cannot
+  run `xcodebuild`/`make build` (it hits `sandbox-exec: sandbox_apply: Operation not permitted` —
+  a nested-sandboxing restriction of its execution environment, unrelated to the actual toolchain).
+  Running the same build/test/lint gate directly, unsandboxed, was the only way to get real
+  pass/fail signal for anything touching `xcodebuild`.
+- **git's automatic rename detection** made the two-commit split (lite-strip vs. rename) clean even
+  though the underlying content was inseparable at the file level — staging the old `Tinycast/*`
+  deletions alongside the new `Mote/*` untracked files let `git add` auto-detect ~156 renames by
+  content similarity.
+- **Asking before expanding scope**, twice: once before starting the rename at all (how wide should
+  it go — app-only vs. whole-repo vs. display-name-only), and once when README.md's Install section
+  turned out to describe the real published Homebrew app. Both times the answer changed what got
+  touched in a way that would have been wrong to guess.
 
-## What didn’t work
+## What didn't work
 
-- **`sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`** when Xcode.app is **not installed** — path doesn’t exist; only Command Line Tools at `/Library/Developer/CommandLineTools`.
-- **Building with CLT alone** — Tinycast targets macOS 26 + Xcode 26 toolchain; CLT is insufficient.
-- **Assuming 96 GB was real RAM** — misleading metric; actual footprint was ~139 MB full / ~54 MB lite.
-- **Expecting all 18 harnesses to pass without a working Xcode** — four need `@Observable` macro expansion via `swift-plugin-server`.
+- **My own plan had three real bugs**, each caught by Codex stopping rather than working around it:
+  1. `hasRanking(for:)` — adding `ensureLoaded()` as a new first statement silently broke Swift's
+     implicit single-expression return, needing an explicit `return`. (Codex hit a real compile
+     error; Claude fixed it directly and updated the plan.)
+  2. Sequencing — `Scripts/run-tests.sh`'s hardcoded `Tinycast/` paths weren't scheduled for fixing
+     until Task 4, but Task 2's own harness-gate requirement ran before that, breaking all 18
+     harnesses immediately after the folder move. Fixed by moving that specific fix earlier.
+  3. `BUNDLE_ID` in `Scripts/release-notes.sh` — initially told Codex to rename this to
+     `com.mote.app`, reasoning it was "an in-app identifier." Wrong: that script generates release
+     notes for the real, currently-shipped release, same category as `REPO`/`CASK`/`MARKER` which
+     were already correctly left alone. Caught during final review, reverted.
+- **A plain grep-based file sweep isn't exhaustive.** Two things it missed entirely: an internal
+  `mote://` URL-scheme literal (not caught until Codex's own authoritative sweep found it), and the
+  `tinycast.icon/` Icon Composer folder (not caught until final post-commit review — it's
+  auto-discovered by XcodeGen from its folder path, never named in `project.yml`).
+- **Assuming "core docs" meant "safe to rename" was wrong for README.md and docs/features/*.md** —
+  they describe the real shipped product's install instructions and reference real GitHub issues,
+  not just this local dev build's identity.
 
 ## Next steps
 
-### Blocker: install Xcode 26 (user machine)
+Nothing blocking. Everything is built, tested, linted, and committed.
 
-1. Install **Xcode 26** from the App Store.
-2. `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`
-3. `sudo xcodebuild -runFirstLaunch`
-4. `make identity` (one-time signing cert)
-5. `make run` — build and launch Tinycast Dev
-6. `make test` && `make lint` — verify green
-
-### If continuing the lite work
-
-1. **Doc cleanup** — scrub clipboard/snippets/calculator/extensions references from `README.md`, `docs/ui.md`, `docs/testing.md`, `docs/development.md`.
-2. **Optional RAM trim** (user asked if 54 MB can go smaller; not implemented):
-   - Defer `appIndex.refresh()` in `AppCore.start()` until first palette open
-   - Lower `IconCache` caps (32→16 MB, 8→4 MB) — affects palette-open memory, not idle
-   - Lazy-load `LauncherRankingStore` JSON
-3. **Commit** — only when user explicitly asks; suggest message along the lines of: *Strip Tinycast to launcher-only surface and add Makefile for daily dev.*
-4. **Re-run full test suite** after Xcode install; fix any compile/runtime regressions from the strip.
+- **Grant Accessibility to "Mote Dev"** on next launch (see Bundle-ID consequence above).
+- **Optional, not started:** the `website/` docs site and `docs/features/*.md` are still stale from
+  the *original* lite-strip (they describe Calculator/Clipboard/Emoji/Snippets/etc., which no
+  longer exist) — this was already flagged as pending in the prior session's handoff and remains
+  untouched by design; today's rename deliberately didn't touch them either, for the separate
+  external-reference reason above. If that cleanup is wanted, it's a distinct piece of work from
+  today's rename.
+- **Not evaluated:** whether to push `main` or open a PR — nothing in this session touched remote
+  git state; all three commits are local only.
 
 ### Key files for the next agent
 
 | Path | Why |
 | --- | --- |
-| `Tinycast/App/AppCore.swift` | Composition root — what starts at launch |
-| `Tinycast/Features/Launcher/Service/AppIndex.swift` | App scan + index; `refresh()` at launch |
-| `Tinycast/Platform/Images/IconCache.swift` | Icon memory caps |
-| `Makefile` | Build entry point |
-| `Scripts/run-tests.sh` | 18 harnesses |
-| `project.yml` | XcodeGen source — run `xcodegen generate` after file changes |
-| `docs/testing.md` | Memory budget + definition of done |
-
-### Conversation context
-
-Prior transcript: `.cursor/projects/Users-yong-code-tinycast/agent-transcripts/a4ef8bb8-a9bd-46d1-ab81-edae14d37372/a4ef8bb8-a9bd-46d1-ab81-edae14d37372.jsonl`
-
-User’s latest RAM question was answered in chat: **54 MB is already good**; further reduction is optional with UX tradeoffs. Implementation was **not** started.
+| `docs/superpowers/plans/2026-08-25-ram-trim-and-rename.md` | The full rename plan, with every exception and correction recorded in place — read this before touching naming again |
+| `Mote/App/AppCore.swift` | Composition root — the deferred `appIndex.refresh()` lives in `start()` |
+| `Mote/Features/Launcher/Model/LauncherRankingStore.swift` | The lazy-load pattern (`ensureLoaded()`) |
+| `Mote/Platform/Images/IconCache.swift` | The two lowered cache caps |
+| `Mote/Windows/About/AboutView.swift` | The four preserved external-link lines — don't rename these |
+| `Scripts/release-notes.sh` | Fully untouched by design — describes the real release, not this rename |
+| `docs/testing.md` | Memory budget (40–80MB normal, 100MB ceiling) + definition of done |
