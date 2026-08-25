@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0079A92831E132613694C5CD /* AccessibilityText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565ED9408E9F32AD6AC90EBA /* AccessibilityText.swift */; };
-		01714CAE985A9339BE4D522D /* tinycast.icon in Resources */ = {isa = PBXBuildFile; fileRef = 897EE7EB03995118042CD8D7 /* tinycast.icon */; };
 		08B0716DC0E99082FF2281D4 /* SystemActionRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E04ACA3223A5B1BA6C5B9C /* SystemActionRunner.swift */; };
 		0C3BB7AA312382F7CEB813D0 /* SearchScopesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B832FF5845329C8E606790A4 /* SearchScopesSection.swift */; };
 		0F9A6769E27879587C31342D /* SpotlightNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8EDDA3A151193334FF4EA5 /* SpotlightNames.swift */; };
@@ -119,6 +118,7 @@
 		CCDF988FFB9782ED258BECEC /* HUDPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3602A0866B8A3DC3F560226 /* HUDPresenter.swift */; };
 		D1437E5F927E788687A2A260 /* CalloutShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CED3535BB79DA0C5E72660 /* CalloutShape.swift */; };
 		D61D48F0D56D41059F3ED386 /* HealthTicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C84C77388578E535F4D52DB9 /* HealthTicker.swift */; };
+		DBD28FF318BF24DE0E612851 /* mote.icon in Resources */ = {isa = PBXBuildFile; fileRef = 016820284169C9E5D886C4B4 /* mote.icon */; };
 		E1C914EF02640A3A2018966C /* SettingsHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C5FADEC994801E940FDB91 /* SettingsHistory.swift */; };
 		E1E881497CA8B0F1D4519FDC /* HotKeyBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86427AC46016436CE55E6964 /* HotKeyBinding.swift */; };
 		E2C613C342539EB0ADB08129 /* IconCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC833C5CCF128A36E599AE50 /* IconCache.swift */; };
@@ -141,6 +141,7 @@
 /* Begin PBXFileReference section */
 		000417EE22448072D4783133 /* HotKeyCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKeyCenter.swift; sourceTree = "<group>"; };
 		011C3E2D71683FF2F80C29AD /* SearchScopes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScopes.swift; sourceTree = "<group>"; };
+		016820284169C9E5D886C4B4 /* mote.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = mote.icon; sourceTree = "<group>"; };
 		021F17D1469A417199C38F4E /* OnboardingCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCard.swift; sourceTree = "<group>"; };
 		05DD0BAD556A9CCF8DB9E82A /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		075CDD2ABD80CF12B8A7610F /* SelectionReveal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionReveal.swift; sourceTree = "<group>"; };
@@ -213,7 +214,6 @@
 		8543AB79287B3D2FA1045ACC /* FavoriteSlots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteSlots.swift; sourceTree = "<group>"; };
 		86427AC46016436CE55E6964 /* HotKeyBinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKeyBinding.swift; sourceTree = "<group>"; };
 		876E77D80216D7194A4ED8F6 /* HyperKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HyperKey.swift; sourceTree = "<group>"; };
-		897EE7EB03995118042CD8D7 /* tinycast.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = tinycast.icon; sourceTree = "<group>"; };
 		8A62544218CDC10543F8CE00 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		90A18ADA8466D75F04BFF017 /* HotKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKeyManager.swift; sourceTree = "<group>"; };
 		9393E2659D2818588C34F8A9 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
@@ -655,7 +655,7 @@
 				AA900F85DDEB5073A2267594 /* Assets.xcassets */,
 				8A62544218CDC10543F8CE00 /* Info.plist */,
 				3691BF94CF64AACB6DD3BDF7 /* Mote.entitlements */,
-				897EE7EB03995118042CD8D7 /* tinycast.icon */,
+				016820284169C9E5D886C4B4 /* mote.icon */,
 			);
 			path = Mote;
 			sourceTree = "<group>";
@@ -722,7 +722,7 @@
 			files = (
 				612B02100DE8A67EBC02270E /* Assets.xcassets in Resources */,
 				CADF7CC0763A7D799DBAECA5 /* NOTICE.md in Resources */,
-				01714CAE985A9339BE4D522D /* tinycast.icon in Resources */,
+				DBD28FF318BF24DE0E612851 /* mote.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
