@@ -21,21 +21,15 @@ A tiny, fully native macOS launcher — the essentials, without the bloat.
 Around **3 MB on disk** and **under 100 MB of RAM** — no Electron, no telemetry, no background
 CPU churn. Just SwiftUI + AppKit with zero dependencies. It's fast because there's nothing to it.
 
-It also **runs Raycast extensions** — the real ones, rendered as native SwiftUI. No Node.js, no
-browser: JavaScriptCore ships with macOS, so that costs no extra binary size.
-
 ## Features
 
 - **App launcher** — fuzzy-search and launch anything, pin favorites, see what's running, quit an app
   or every app at once.
-- **Custom commands** — run named shell commands through fuzzy search or their own global hotkeys.
-- **Calculator** — do math, unit, live currency and crypto conversions inline, right in the palette.
-- **Clipboard history** — text and images, searchable, pasted back into the app you were using.
-- **Snippets** — reusable Markdown templates with dynamic placeholders, arguments, nested references
-  and optional keyword expansion.
+- **System Settings** — jump straight to a Settings pane.
+- **System actions** — volume, appearance, Bluetooth, Hide Others, Quit All, and the rest, from the
+  palette or a global hotkey.
 - **Global hotkey** — one shortcut summons the palette from anywhere.
 - **Per-app hotkeys** — bind a key to an app; press it to toggle (focus/hide).
-- **Raycast extensions** — run the ones you already have natively, rendered as SwiftUI.
 
 ## Install
 
@@ -74,9 +68,12 @@ disabled, and keystrokes are matched locally, never stored and never sent anywhe
 
 ## Building from source
 
-See **[docs/development.md](docs/development.md)** for the toolchain, build, packaging, release and
-website workflows. **[docs/](docs/README.md)** indexes everything else — architecture, engineering
-standards, the design system and one document per feature.
+```sh
+make install   # leftover manual steps only
+make run       # Debug build and launch Tinycast Dev
+```
+
+See **[docs/development.md](docs/development.md)** for the toolchain, signing, packaging and website.
 
 ## Contributing
 

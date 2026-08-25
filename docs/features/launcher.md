@@ -174,9 +174,8 @@ permission-aware failures. With the palette closed it targets the frontmost app,
 Quit All act on the same window a palette launch would have.
 
 System actions occupy their own launcher section and their own Settings pane. The empty-query publication
-order is applications, System Settings, quicklinks, snippets, system actions, window commands, custom
-commands, then built-in commands; the sectioned view filters in that same order so the visible rows remain
-identical to the flat selection index.
+order is applications, System Settings, system actions, then built-in commands; the sectioned view
+filters in that same order so the visible rows remain identical to the flat selection index.
 Search, favorites, visibility and learned ranking work through the normal `AppEntry` path, and every
 action is bindable to a global shortcut from Settings › System Actions
 (see [hotkeys.md](hotkeys.md)).
@@ -197,8 +196,8 @@ its own for real media keys. Volume Up/Down walk a 5% grid (`VolumeLevel.stepped
 `Tests/volume-test.swift`): an off-grid level snaps to the next line rather than past it, so from 37%
 up lands on 40% and down on 35%, and repeated presses stay on round numbers.
 
-An action whose effect is invisible reports back through a pill (`MessageHUDController`, the same one
-Custom Commands and Snippets confirm through) rather than finishing silently:
+An action whose effect is invisible reports back through a pill (`MessageHUDController`) rather than
+finishing silently:
 `SystemActionRunner.run` returns a `SystemActionFeedback` naming the state it landed in
 (`Trash Emptied`, `Hidden Files Shown`, `Dark Appearance`, `Bluetooth Off`, `3 Disks Ejected`), and
 `AppCore` shows it with a `DialogTone` derived from the feedback's `isNoOp` flag: `.success` when
@@ -219,46 +218,6 @@ control at all. Multi-disk ejection excludes internal and network volumes, treat
 that the same physical eject already unmounted as done, and reports remaining failures together.
 Preference-backed toggles refuse to write when the current value can't be read, and notification
 dismissal matches Accessibility subroles rather than English labels.
-
-## Window commands
-
-`WindowCommandCatalog` supplies the 32 window actions as a static slice, published as a whole by
-`AppIndex.setWindowCommandsVisible(_:)` and shown under a "Window Management" section. Like system
-actions they carry dedicated global hotkeys (`AppEntry.hotKeyAction` returns `.windowCommand(id:)`),
-so launcher rows render keycaps for them. Their per-command shortcut and visibility controls live in
-Settings › Window Management rather than a launcher-category pane of their own — the same call already
-made for snippets. The feature ships off. See
-[window-management.md](window-management.md).
-
-## Quicklinks
-
-`QuicklinkStore` supplies its slice the same way custom commands do, sorted pinned-first then
-alphabetically by `Quicklink.precedes`. Only the name is indexed — a URL is a subsequence of nearly
-any query — and a per-item "show in root search" flag filters the slice before it is published. The
-four Quicklinks commands are dropped from the built-in slice in the same publish while the feature is
-off, so a toggle can't leave the section and its commands out of step. See
-[quicklinks.md](quicklinks.md).
-
-## Custom commands
-
-`CustomCommandStore` supplies user-authored entries to `AppIndex` without joining the off-main
-application scan. Custom commands are their own alphabetized section ahead of the built-in Commands
-section, and reuse fuzzy ranking, favorites, visibility, keycap rendering and the launcher's flat
-selection.
-
-Only the display name is indexed. Activation resolves the stable UUID through the store and dispatches
-to `ShellCommandRunner`; see [custom-commands.md](custom-commands.md) for persistence, hotkeys and
-execution semantics.
-
-## Notes commands
-
-`CommandID.showNotes`, `.createNote`, and `.searchNotes` publish the three Notes entry points while the
-feature is enabled. Activation hides the palette without restoring focus and calls the matching
-`NotesCoordinator` action; each `HotKeyAction` reaches that same boundary and rechecks enablement.
-
-`AppIndex` projects the three commands together from `notesEnabled`, independently of File Search and
-Quicklinks. They represent collection actions rather than individual notes, so Notes adds no
-`AppEntry.Kind` or launcher section. See [notes.md](notes.md).
 
 > **Invariant:** `Tests/fuzz-test.swift` compiles the real `Tinycast/Features/Launcher/Model/SearchRelevance.swift`, so
 > that file must stay Foundation-only and pure. There is no copy of the scorer to keep in sync.
@@ -300,8 +259,8 @@ across the list — the top of Favorites on add, the neighbour above the one tha
 
 `FavoriteSlots` (`Launcher/Model/FavoriteSlots.swift`) defines ten local palette slots: **⌘1…⌘9 then
 ⌘0**. They match the physical number row, not the character produced by the current keyboard layout,
-so the same positions work on QWERTY and AZERTY. The same slots address pinned Clipboard entries in
-that screen; the eleventh favorite is still listed and reorderable, and simply has no slot.
+so the same positions work on QWERTY and AZERTY. The eleventh favorite is still listed and reorderable,
+and simply has no slot.
 
 Both palette sizes serve the chords from the same prefix, because `paletteIsCollapsed` already
 requires an empty query: **compact implies empty implies `favoriteCount` is the pinned prefix**. That
@@ -340,8 +299,8 @@ running dot and the availability of the quit actions:
 - **Quit All Applications** a system action. `AppLauncher.quitAllTargets()` is the
   policy (every `.regular` app except Finder — `terminate()` only relaunches it — and Tinycast,
   excluded by PID because About/Settings temporarily flips it to `.regular`). `SystemActionCoordinator.quitAllApps()`
-  resolves that list **once**, confirms it with an `NSAlert`, then terminates exactly what was
-  confirmed. The palette hides before the alert — it is a floating panel and would sit above it.
+  resolves that list **once**, confirms it with `DialogController`, then terminates exactly what was
+  confirmed. The palette hides before the dialog — it is a floating panel and would sit above it.
 
 Both quits are graceful `NSRunningApplication.terminate()`, so an app with unsaved work still puts up
 its own save sheet.

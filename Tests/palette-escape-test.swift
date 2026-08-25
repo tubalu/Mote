@@ -27,34 +27,13 @@ struct PaletteEscapeTests {
             .clearQuery,
             "a typed launcher query clears before the palette hides")
         expect(
-            PaletteEscapeAction.resolve(menuOpen: false, query: "notes", mode: .extensionCommand),
-            .clearQuery,
-            "a typed extension query clears before the extension screen exits")
-        expect(
-            PaletteEscapeAction.resolve(menuOpen: false, query: "", mode: .extensionCommand),
-            .exitExtensionScreen,
-            "an empty extension query exits the extension screen")
-        expect(
             PaletteEscapeAction.resolve(menuOpen: false, query: "", mode: .launcher),
             .hidePalette,
             "an empty launcher query hides the palette")
-        // The two modes where the field is not a search field: an argument answer and a chat draft.
         expect(
-            PaletteEscapeAction.resolve(menuOpen: false, query: "blue", mode: .quicklinkArguments),
-            .clearQuery,
-            "a half-typed argument clears before the pending quicklink is abandoned")
-        expect(
-            PaletteEscapeAction.resolve(menuOpen: false, query: "", mode: .quicklinkArguments),
-            .hidePalette,
-            "an empty argument field hides the palette, which cancels the pending quicklink")
-        expect(
-            PaletteEscapeAction.resolve(menuOpen: false, query: "why is the sky", mode: .ai),
-            .clearQuery,
-            "an unsent chat draft clears before the palette hides")
-        expect(
-            PaletteEscapeAction.resolve(menuOpen: true, query: "", mode: .extensionCommand),
+            PaletteEscapeAction.resolve(menuOpen: true, query: "", mode: .launcher),
             .closeMenu,
-            "a menu outranks the extension screen it is drawn over")
+            "a menu outranks an empty launcher query")
 
         print("\(passes) passed, \(failures) failed")
         if failures > 0 { exit(1) }

@@ -10,15 +10,13 @@ The command palette is a borderless floating `NSPanel` hosting SwiftUI; see
   panel to fit content and the top edge drifts on the compact↔expanded swap. A user drag is the one
   frame change that starts elsewhere, and `windowDidMove` folds it back into the anchor so the
   controller stays the authority.
-- **The flat `selection` index must match the visible row order exactly**, including the inline
-  calculator card at index 0 when present. Selection is the single source of truth for highlight and
-  activation. `Features/PaletteRowIndex.swift` is that mapping and stays **Foundation-only and pure** —
-  no SwiftUI, no AppKit — so `palette-selection-test` compiles the shipped type rather than a copy.
-  Section headers are not selectable and never consume an index.
+- **The flat `selection` index must match the visible row order exactly.** Selection is the single
+  source of truth for highlight and activation. `Features/PaletteRowIndex.swift` is that mapping and
+  stays **Foundation-only and pure** — no SwiftUI, no AppKit — so `palette-selection-test` compiles the
+  shipped type rather than a copy. Section headers are not selectable and never consume an index.
 - **While a footer menu is open the search field never resigns first responder.** Input is frozen
   instead; resigning shifts the text a point or two.
-- **Focus restoration is load-bearing.** Paste targets the recorded `previousApp` and requires the
-  Accessibility permission (`Permissions.ensureAccessibility()`).
+- **Focus restoration is load-bearing.** Hiding the palette returns key to `previousApp`.
 - **Input-source switching is a palette session.** The source active at summon time is captured before
   the panel becomes key, the configured source is applied through `PalettePanel.fieldEditorContext`, and
   the captured source is restored on hide and on termination — but only when the palette is still on the
@@ -33,8 +31,7 @@ The command palette is a borderless floating `NSPanel` hosting SwiftUI; see
                                           PaletteCoordinator.togglePalette()
                                                               ↓
                                           PaletteWindowController.show()
-                                            · records previousApp (the paste / focus target)
-                                            · resolves PasteTarget once per summon
+                                            · records previousApp (the focus target)
                                             · resolves the screen anchor once per summon
                                             · captures the input source to restore, once per summon
                                             · positions, lays out off-screen, orders front
@@ -62,49 +59,12 @@ palette indexes into it. Adding a mode means adding a conformer, not a branch in
 | Mode | Screen | Inner list |
 | --- | --- | --- |
 | `.launcher` | `LauncherScreen` | `LauncherList` |
-| `.clipboard` | `ClipboardScreen` | `ClipboardList` + preview |
-| `.calculatorHistory` | `CalculatorHistoryScreen` | `CalculatorHistoryList` |
-| `.emoji` | `EmojiScreen` | `EmojiGridView` |
-| `.fileSearch` | `FileSearchScreen` | `FileSearchList` (see [file-search.md](file-search.md)) |
-| `.schedule` | `ScheduleScreen` | `ScheduleList` (see [calendar.md](calendar.md)) |
-| `.uninstall` | `UninstallScreen` | `UninstallList` (see [uninstall.md](uninstall.md)) |
-| `.quicklinks` | `QuicklinkListScreen` | `QuicklinkList` |
-| `.quicklinkArguments` | `QuicklinkArgumentsScreen` | `QuicklinkArgumentsView` (see [quicklinks.md](quicklinks.md#the-argument-prompt)) |
-| `.extensionCommand` | `ExtensionCommandScreen` | `ExtensionCommandView` (see [extensions.md](extensions.md)) |
 
-Every mode but `.launcher` is a sub-screen that backs out to the launcher. **Tab cycles launcher ↔
-clipboard and nothing else** unless the selected row declares arguments, in which case it walks those
-fields first (see below); the rest are reached by a command or a global hotkey, and Uninstall only
-from a launcher app's Actions menu, scoped to that app. **Escape clears a non-empty query before it
-hides the palette or exits an extension screen**, so one press clears and the next leaves.
-
-The argument screen is the one mode where the search field is not a search field: it _is_ the current
-argument's input, so its placeholder names that argument and ↵ submits rather than activating a row.
-Its own state lives on `AppCore.quicklinkArguments`, the way `.uninstall`'s target lives on
-`UninstallSession`, and leaving the mode cancels the pending open. A bare backspace steps back an
-argument before it falls through to the usual exit-to-launcher; Escape erases the half-typed answer
-first, and a second press hides the palette, which ends the pending open with it.
-
-### Inline command arguments
-
-An extension command can declare arguments, and they are typed **in the header, beside the search
-field** — not on a screen of their own. That costs the header its one simple rule, so it holds two
-invariants:
-
-- The search field sits at **one structural position, always**. It is never moved inside an `if`:
-  flipping the branch tears down its field editor, which drops first responder mid-navigation. Only
-  its *width* changes — it shrinks to the width of the typed text so the argument chips sit right
-  after it, as they do in Raycast.
-- Argument focus is its own `@FocusState`, `argumentFocused`, keyed by argument name. Moving the
-  selection hands focus back to the search field first, because the row that owned those fields is
-  about to stop being selected. ↵ on a blank required argument focuses it instead of launching.
-
-The typed values live on `PaletteState.commandArguments`, keyed by
-`PaletteState.argumentKey(entryID, name)`, and are cleared with the rest of the screen.
+The palette has one screen. **Escape clears a non-empty query before it hides the palette**, so one
+press clears and the next leaves.
 
 The flat `selection` index is the single source of truth for highlight / activation and **must always
-match the visible row order**, including the card at index 0 when present — the calculator's (see
-[calculator.md](calculator.md)) or the meeting join card (see [calendar.md](calendar.md)), never both.
+match the visible row order**. `LauncherScreen` is the one conformer.
 
 ## Window placement
 

@@ -88,18 +88,7 @@ struct DoubleTapDetectorTests {
     // MARK: - Built-in command mappings
 
     static func commandActions() {
-        let expected: [(CommandID, HotKeyAction, String)] = [
-            (.clipboardHistory, .toggleClipboard, "hotkey.toggleClipboard"),
-            (.searchEmoji, .toggleEmoji, "hotkey.toggleEmoji"),
-            (.searchFiles, .searchFiles, "hotkey.searchFiles"),
-            (.joinNextMeeting, .joinNextMeeting, "hotkey.joinNextMeeting"),
-            (.mySchedule, .mySchedule, "hotkey.mySchedule"),
-            (.createEvent, .createEvent, "hotkey.createEvent"),
-            (.showNotes, .showNotes, "hotkey.showNotes"),
-            (.createNote, .createNote, "hotkey.createNote"),
-            (.searchNotes, .searchNotes, "hotkey.searchNotes"),
-            (.aiChat, .aiChat, "hotkey.aiChat")
-        ]
+        let expected: [(CommandID, HotKeyAction, String)] = []
         let answers = CommandID.allCases.compactMap { id in id.hotKeyAction.map { (id, $0) } }
         expect(
             answers.count == expected.count,

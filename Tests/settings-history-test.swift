@@ -39,8 +39,8 @@ struct SettingsHistoryTests {
 
     static func selectingPushes() {
         var history = SettingsHistory(current: .general)
-        history.select(.clipboard)
-        expect(history.current == .clipboard, "selecting shows the new pane")
+        history.select(.applications)
+        expect(history.current == .applications, "selecting shows the new pane")
         expect(history.canGoBack, "and leaves the old one behind us")
         expect(!history.canGoForward, "with nothing ahead")
     }
@@ -52,19 +52,19 @@ struct SettingsHistoryTests {
         history.select(.general)
         expect(!history.canGoBack, "re-selecting the current pane pushes nothing")
 
-        history.select(.backup)
-        history.select(.backup)
+        history.select(.permissions)
+        history.select(.permissions)
         history.goBack()
         expect(history.current == .general, "and one Back still reaches the pane before it")
     }
 
     static func roundTrips() {
         var history = SettingsHistory(current: .general)
-        history.select(.snippets)
-        history.select(.emoji)
+        history.select(.applications)
+        history.select(.systemActions)
 
         history.goBack()
-        expect(history.current == .snippets, "Back walks one entry at a time")
+        expect(history.current == .applications, "Back walks one entry at a time")
         expect(history.canGoForward, "and what we left becomes reachable again")
 
         history.goBack()
@@ -72,14 +72,14 @@ struct SettingsHistoryTests {
 
         history.goForward()
         history.goForward()
-        expect(history.current == .emoji, "Forward retraces the same path")
+        expect(history.current == .systemActions, "Forward retraces the same path")
         expect(!history.canGoForward, "and stops where we had got to")
     }
 
     static func aNewBranchDiscardsTheOldOne() {
         var history = SettingsHistory(current: .general)
-        history.select(.snippets)
-        history.select(.emoji)
+        history.select(.applications)
+        history.select(.systemActions)
         history.goBack()
         history.goBack()
 
