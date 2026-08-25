@@ -6,24 +6,24 @@ the signing identity itself is in [signing.md](signing.md).
 ## Packaging a DMG locally
 
 ```sh
-./Scripts/build-dmg.sh            # -> build/Tinycast-<version>.dmg (version from project.yml)
-./Scripts/build-dmg.sh 0.5.7      # -> build/Tinycast-0.5.7.dmg
+./Scripts/build-dmg.sh            # -> build/Mote-<version>.dmg (version from project.yml)
+./Scripts/build-dmg.sh 0.5.7      # -> build/Mote-0.5.7.dmg
 ```
 
-It builds a Release `Tinycast.app` signed with `Tinycast Self-Signed` and packs it with an
+It builds a Release `Mote.app` signed with `Mote Self-Signed` and packs it with an
 `/Applications` symlink. Official per-channel releases are built by CI, below.
 
 ## Signing & Gatekeeper
 
-Both local builds and CI releases sign with the same stable `Tinycast Self-Signed` identity, not an
+Both local builds and CI releases sign with the same stable `Mote Self-Signed` identity, not an
 Apple Developer ID — so macOS quarantines a directly-downloaded DMG. The Homebrew cask strips that
-automatically; direct downloaders run `xattr -dr com.apple.quarantine "…/Tinycast.app"` once. Full
+automatically; direct downloaders run `xattr -dr com.apple.quarantine "…/Mote.app"` once. Full
 details in [signing.md](signing.md).
 
 ## How the in-app updater consumes a release
 
-Every release publishes two assets from one build: `Tinycast-<version>.dmg`, which people download by
-hand and which the cask installs, and `Tinycast-<version>.zip`, which the in-app updater installs. The
+Every release publishes two assets from one build: `Mote-<version>.dmg`, which people download by
+hand and which the cask installs, and `Mote-<version>.zip`, which the in-app updater installs. The
 zip is produced with `ditto -c -k --keepParent --sequesterRsrc` — the only zip that leaves the code
 signature verifiable, which matters because the updater refuses any bundle whose leaf certificate does
 not match the running app's.
@@ -38,7 +38,7 @@ Three things a release must keep true, or the updater skips it:
 
 **Both casks declare `auto_updates true`.** That is Homebrew's flag for an app that manages its own
 version, and it is what keeps `brew update && brew upgrade` from fighting an app that updated itself:
-brew never reports Tinycast outdated, never re-downloads it, and never rolls a self-updated copy back.
+brew never reports Mote outdated, never re-downloads it, and never rolls a self-updated copy back.
 Removing that line would reintroduce exactly those three problems. See
 [features/updates.md](features/updates.md).
 
@@ -69,8 +69,8 @@ open one**. See [testing.md](testing.md#definition-of-done).
 `.github/workflows/release.yml` builds and publishes a DMG from GitHub Actions, no local machine
 needed. Run it from the **Actions** tab (`Release` → **Run workflow**) and pick:
 
-- **channel** — `beta` or `stable`. Each builds a distinct app (`Tinycast Beta.app` / `Tinycast.app`)
-  with its own bundle id, alongside the local `Tinycast Dev.app`. Beta gets an auto-incrementing
+- **channel** — `beta` or `stable`. Each builds a distinct app (`Mote Beta.app` / `Mote.app`)
+  with its own bundle id, alongside the local `Mote Dev.app`. Beta gets an auto-incrementing
   `-beta.N` suffix (`N` = the Actions run number) so re-running never collides; stable ships the
   version as-is.
 - **version** — base semver, e.g. `0.2.0`.

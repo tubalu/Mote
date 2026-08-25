@@ -1,14 +1,12 @@
-# Tinycast
+# Mote
 
-A native macOS menu-bar launcher — a minimal Raycast: fuzzy app launcher, global and per-app hotkeys, a
-text/image clipboard history, an inline calculator, a floating note, snippets, quicklinks, window
-management and an emoji picker. It also **runs Raycast extensions** natively, in JavaScriptCore.
-SwiftUI + AppKit, running as an accessory with no Dock icon (`LSUIElement`). Zero third-party
-dependencies.
+A native macOS menu-bar launcher — a minimal Raycast: fuzzy app launcher, global and per-app hotkeys,
+and system actions. SwiftUI + AppKit, running as an accessory with no Dock icon (`LSUIElement`). Zero
+third-party dependencies.
 
 ## Posture: latest-only, always
 
-**Tinycast targets one macOS — the current stable release — and nothing else.** macOS 26+, the Xcode 26
+**Mote targets one macOS — the current stable release — and nothing else.** macOS 26+, the Xcode 26
 toolchain, Swift 6 language mode. There is no compatibility floor to defend, no shim layer and no
 deprecation debt, and that is the single largest reason the codebase stays as small as it does.
 
@@ -35,12 +33,12 @@ system-wide chord, and HIToolbox's TIS APIs remain the public input-source mecha
 
 | Folder | Holds |
 | --- | --- |
-| `Tinycast/App/` | `@main`, `AppDelegate`, `AppCore` — the composition root |
-| `Tinycast/DesignSystem/` | shared visual primitives; `Theme.swift` is the only design-token source |
-| `Tinycast/Platform/` | system shims: `Permissions`, `AppPaths`, `Signposts`, `NotificationToken`, … |
-| `Tinycast/Palette/` | the palette shell: panel, window controller, `RootPaletteView`, `PaletteScreen` |
-| `Tinycast/Windows/` | the non-palette AppKit surfaces: `Dialog/`, `HUD/`, `About/`, `AppWindowController` |
-| `Tinycast/Features/` | one folder per feature; larger ones split `Model/` `Service/` `UI/` `Settings/` |
+| `Mote/App/` | `@main`, `AppDelegate`, `AppCore` — the composition root |
+| `Mote/DesignSystem/` | shared visual primitives; `Theme.swift` is the only design-token source |
+| `Mote/Platform/` | system shims: `Permissions`, `AppPaths`, `Signposts`, `NotificationToken`, … |
+| `Mote/Palette/` | the palette shell: panel, window controller, `RootPaletteView`, `PaletteScreen` |
+| `Mote/Windows/` | the non-palette AppKit surfaces: `Dialog/`, `HUD/`, `About/`, `AppWindowController` |
+| `Mote/Features/` | one folder per feature; larger ones split `Model/` `Service/` `UI/` `Settings/` |
 | `Tests/` | the standalone harnesses — one Swift file each, no XCTest target |
 | `Scripts/` | every executable script: test runner, data generators, packaging, linting, editor setup |
 
@@ -72,28 +70,12 @@ feature's doc, under its own `## Invariants`.
   the forced-dark build shipped, restated rather than re-derived. Retune a light branch freely — change
   a dark one only when the task is to change Dark. `AppAppearance` drives `NSApp.appearance`, and
   `.system` maps to `nil` so AppKit follows macOS on its own.
-- **Tinycast presents its own dialogs — never `NSAlert`, `NSSlider` or a system popover.** A question
+- **Mote presents its own dialogs — never `NSAlert`, `NSSlider` or a system popover.** A question
   goes through `DialogController`, a report through a HUD via `HUDPresenter`.
 - **A networked feature fetches on a private `.ephemeral`, `urlCache = nil` session**, never
-  `URLSession.shared`, so its own cache file stays the only copy on disk. `CurrencyRateStore` is the
-  reference — copy it rather than inventing a second shape. A flag that grants a capability is never
-  carried by a backup: `snippetsEnabled` is excluded from settings backups so an import cannot grant
-  keystroke listening.
-- **Extensions stay inside `Features/Extensions/`.** Every view, row, menu, geometry and sizing
-  constant an extension needs is written and owned there — never added to `DesignSystem/`, never bolted
-  onto `Theme`, and never shared with another feature. An extension renders untrusted third-party code
-  whose shape we do not control, so it must never be able to force a change on a launcher surface.
-  **Duplicating a view or a piece of layout maths to keep it here is the correct trade**, and the one
-  place the no-duplication rule yields. What *is* shared: `Theme`'s base tokens (spacing, radius,
-  colour), `PopoverMenuItem` as a data shape, and `Platform/`. What is never shared: anything with
-  "how an extension looks or moves" in it. `ExtensionActionsPanel` and `ExtensionGridGeometry` exist
-  precisely because the palette's own menu and the emoji grid must stay free to change without them.
+  `URLSession.shared`, so its own cache file stays the only copy on disk.
 - **`AppEntry.Kind` is the only thing that says what an entry is.** One case per launcher section, per
   `VisibilityStore` category and per Settings pane — never re-derive a category by sniffing an entry ID.
-- **Generated files are never hand-edited.** `EmojiData.generated.swift` comes from
-  `node Scripts/gen-emoji.js`, `CurrencyData.generated.swift` from `node Scripts/gen-currencies.js`, and
-  `Resources/RaycastRuntime.generated.js` from `Scripts/raycast-runtime/build.mjs` — the runtime is
-  committed so building the app never needs Node.
 - **`DesignSystem/Scrolling/EdgeDissolve.swift` and `ThinScrollbar.swift` are off-limits.** Both are
   tuned by eye against the palette's floating bars, so any edit is a visual regression. Needing to touch
   one to fix a scroll bug means the real fix belongs elsewhere.
@@ -110,10 +92,10 @@ feature's doc, under its own `## Invariants`.
   constant or type instead. Cap 100 characters, delete rather than update, and never comment a change
   you just made. Nothing lints this; get it right the first time.
   Full rules: [standards.md#comments](docs/standards.md#comments).
-- **Debug builds are their own channel** — `Tinycast Dev.app` / `com.tinycast.app.dev` — so a local run
+- **Debug builds are their own channel** — `Mote Dev.app` / `com.mote.app.dev` — so a local run
   never shares prefs, caches, TCC grants or the login item with an installed copy. Anything newly
   persisted must stay keyed by `Bundle.main.bundleIdentifier`.
-- **XcodeGen owns the project.** `Tinycast.xcodeproj` is committed but generated from `project.yml`;
+- **XcodeGen owns the project.** `Mote.xcodeproj` is committed but generated from `project.yml`;
   after editing it, run `xcodegen generate` and commit both. No SwiftPM, and never `Bundle.module`.
 
 ## Before you finish
@@ -123,5 +105,5 @@ Each item is explained in [testing.md](docs/testing.md#definition-of-done).
 - `./Scripts/run-tests.sh` passes.
 - The Debug build compiles with **no new warnings**.
 - `./Scripts/lint.sh` is clean.
-- `grep -rln 'import AppKit\|import SwiftUI\|import Cocoa' Tinycast/Features/*/Model/` returns nothing.
+- `grep -rln 'import AppKit\|import SwiftUI\|import Cocoa' Mote/Features/*/Model/` returns nothing.
 - Any doc your change made wrong is fixed in the same commit.

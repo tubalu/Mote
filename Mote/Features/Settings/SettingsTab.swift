@@ -1,0 +1,50 @@
+enum SettingsTab: CaseIterable, Identifiable {
+    case general, applications, systemSettings, systemActions, permissions, about
+    /// The case, never an index: a selectable `List` flattens section and row IDs together.
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .general: return "General"
+        case .applications: return "Applications"
+        case .systemSettings: return "System Settings"
+        case .systemActions: return "System Actions"
+        case .permissions: return "Permissions"
+        case .about: return "About"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .general: return "switch.2"
+        case .applications: return "square.grid.2x2"
+        case .systemSettings: return "gearshape"
+        case .systemActions: return "bolt"
+        case .permissions: return "lock.shield"
+        case .about: return "info.circle"
+        }
+    }
+}
+
+/// Declaration order is display order; not `.Section`, which would shadow SwiftUI's `Section`.
+enum SettingsSection: CaseIterable, Identifiable {
+    case general, launcher, advanced
+    /// See `SettingsTab.id`: distinct types keep the two namespaces from colliding.
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .general: return "General"
+        case .launcher: return "Launcher"
+        case .advanced: return "Advanced"
+        }
+    }
+
+    var tabs: [SettingsTab] {
+        switch self {
+        case .general: return [.general, .permissions]
+        case .launcher: return [.applications, .systemSettings, .systemActions]
+        case .advanced: return [.about]
+        }
+    }
+}
