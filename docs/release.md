@@ -16,14 +16,14 @@ It builds a Release `Mote.app` signed with `Mote Self-Signed` and packs it with 
 ## Signing & Gatekeeper
 
 Both local builds and CI releases sign with the same stable `Mote Self-Signed` identity, not an
-Apple Developer ID — so macOS quarantines a directly-downloaded DMG. The Homebrew cask strips that
-automatically; direct downloaders run `xattr -dr com.apple.quarantine "…/Mote.app"` once. Full
-details in [signing.md](signing.md).
+Apple Developer ID — so macOS quarantines a downloaded DMG. Clear it once with
+`xattr -dr com.apple.quarantine "/Applications/Mote.app"`. Full details in [signing.md](signing.md).
+There is **no Homebrew cask** for Mote; distribution is GitHub Releases only.
 
 ## How the in-app updater consumes a release
 
 Every release publishes two assets from one build: `Mote-<version>.dmg`, which people download by
-hand and which the cask installs, and `Mote-<version>.zip`, which the in-app updater installs. The
+hand, and `Mote-<version>.zip`. The
 zip is produced with `ditto -c -k --keepParent --sequesterRsrc` — the only zip that leaves the code
 signature verifiable, which matters because the updater refuses any bundle whose leaf certificate does
 not match the running app's.
@@ -36,11 +36,6 @@ Three things a release must keep true, or the updater skips it:
   installs off the macOS 15 build.
 - **It is not a draft.**
 
-**Both casks declare `auto_updates true`.** That is Homebrew's flag for an app that manages its own
-version, and it is what keeps `brew update && brew upgrade` from fighting an app that updated itself:
-brew never reports Mote outdated, never re-downloads it, and never rolls a self-updated copy back.
-Removing that line would reintroduce exactly those three problems. See
-[features/updates.md](features/updates.md).
 
 ## Continuous integration
 
@@ -76,8 +71,7 @@ needed. Run it from the **Actions** tab (`Release` → **Run workflow**) and pic
 - **version** — base semver, e.g. `0.2.0`.
 
 It builds on a `macos-26` runner with Xcode 26 and publishes a GitHub Release tagged
-`v<full-version>` with a versioned DMG and zip asset, marked prerelease for beta. On success it also
-bumps the matching cask in the tap and announces the release on Discord.
+`v<full-version>` with a versioned DMG and zip asset, marked prerelease for beta.
 
 ### Release notes
 
@@ -99,31 +93,11 @@ Two details the script exists for:
   commit can carry both — so "the previous release" is only ever right within one channel. A stable
   release therefore spans every beta since the last stable.
 - **The body is split by `<!-- tinycast:install -->`.** Everything above it is the changelog;
-  everything below is the Homebrew and quarantine text, which only a download page needs. The update
+  everything below is the install / quarantine text. The update
   window cuts at that marker — see [features/updates.md](features/updates.md). Full PR URLs are
   shortened to `#304`, which still autolinks on the web and fits a 460pt window.
 
 The Discord announcement carries the same changelog, truncated to fit Discord's component limit, and
 pings `@everyone`.
 
-### Homebrew tap automation
 
-The release job's final step rewrites the `version` + `sha256` of the channel's cask (`tinycast` or
-`tinycast@beta`) in the [`homebrew-tinycast`](https://github.com/abue-ammar/homebrew-tinycast) tap and
-pushes. It needs a `HOMEBREW_TAP_TOKEN` repo secret — a fine-grained PAT with **Contents: read/write**
-on the tap repo. Without the secret the step logs a warning and skips; the release still publishes.
-
-## Website
-
-`.github/workflows/website.yml` builds `website/` (Next.js static export + Tailwind, with Fumadocs for
-the docs section) and deploys it to GitHub Pages at `https://abue-ammar.github.io/tinycast/` on every
-push to `main` that touches `website/`. Enable it once via
-**Settings → Pages → Source = GitHub Actions**.
-
-```sh
-cd website && npm install && npm run dev     # local preview
-```
-
-The workflow uploads `website/out` — a Next.js export lands there, not in `dist/`. `public/.nojekyll`
-must stay: GitHub Pages runs Jekyll, which ignores `_`-prefixed directories, so without it every
-asset under `_next/` 404s. See [website/README.md](../website/README.md).

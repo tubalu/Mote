@@ -1,7 +1,7 @@
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import type { ReactNode } from "react";
 import { DocsProvider } from "../../components/docs-provider";
-import { DiscordLogo, GitHubLogo, Logo } from "../../components/ui/icon";
+import { GitHubLogo, Logo } from "../../components/ui/icon";
 import { site } from "../../data/site";
 import { source } from "../../lib/source";
 
@@ -24,14 +24,6 @@ export default function Layout({ children }: { children: ReactNode }) {
             label: "GitHub repository",
             url: site.repo,
             icon: <GitHubLogo size={16} />,
-            external: true,
-          },
-          {
-            type: "icon",
-            text: "Discord",
-            label: "Join the Discord",
-            url: site.community.discord,
-            icon: <DiscordLogo size={16} />,
             external: true,
           },
         ]}

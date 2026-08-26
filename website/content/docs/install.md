@@ -1,91 +1,34 @@
 ---
 title: Install
-description: Homebrew, the release channels, and the one manual step a direct download needs.
+description: Download Mote from GitHub Releases and clear quarantine once.
 ---
 
-Tinycast needs **macOS 26 or later**. There is a separate cask for macOS 15 Sequoia — see
-[Older macOS](#older-macos).
+Mote needs **macOS 26 or later**.
 
-## Homebrew
+## Download
 
-This is the recommended route, because Homebrew clears the macOS quarantine flag for you on every
-install and update.
+Builds are published on the
+[Releases page](https://github.com/tubalu/Mote/releases).
 
-```bash
-brew trust --tap abue-ammar/tinycast
-brew install --cask abue-ammar/tinycast/tinycast
-```
-
-`brew trust` is required once for any third-party tap; Homebrew refuses to install from an untrusted
-tap without it.
-
-### Channels
-
-Each channel is a **separate application** with its own bundle identifier, settings, permissions and
-login item. They run side by side, so you can keep stable installed while trying a beta.
-
-| Channel | Cask            | App                 |
-| ------- | --------------- | ------------------- |
-| Stable  | `tinycast`      | `Tinycast.app`      |
-| Beta    | `tinycast@beta` | `Tinycast Beta.app` |
+1. Download `Mote-<version>.dmg`
+2. Open it and drag **Mote** to Applications
+3. Clear quarantine once (self-signed build — macOS blocks the first open otherwise):
 
 ```bash
-brew install --cask abue-ammar/tinycast/tinycast@beta
+xattr -dr com.apple.quarantine "/Applications/Mote.app"
 ```
-
-Because the channels are separate apps, installing the beta does not upgrade your stable install and
-does not share its settings. To move settings across, use
-[Backup](/docs/reference/backup).
-
-### Older macOS
-
-Tinycast also runs on macOS 15 Sequoia through its own cask:
-
-```bash
-brew install --cask abue-ammar/tinycast/tinycast-sequoia
-```
-
-macOS 26 is the primary target and gets features first.
-
-## Downloading the DMG
-
-Builds are also published on the
-[Releases page](https://github.com/abue-ammar/tinycast/releases).
-
-Tinycast is **self-signed** — there is no paid Developer ID certificate behind it — so macOS
-quarantines a hand-downloaded copy and refuses to open it. Clear the flag once, after dragging the
-app to Applications:
-
-```bash
-xattr -dr com.apple.quarantine "/Applications/Tinycast.app"
-```
-
-You do **not** need this if you installed through Homebrew.
 
 ## Updating
 
-```bash
-brew upgrade --cask abue-ammar/tinycast/tinycast
-```
-
-Every release is signed with the same certificate, which is what keeps your Accessibility grant
-alive across updates instead of asking for it again.
+Download the newer DMG from Releases and replace the app in Applications, then clear quarantine
+again if macOS asks.
 
 ## Uninstalling
 
-```bash
-brew uninstall --cask abue-ammar/tinycast/tinycast
-```
-
-To remove the files Tinycast created, delete its Application Support and Caches folders:
+Move `Mote.app` to the Trash. To remove settings and caches:
 
 ```bash
-rm -rf ~/Library/Application\ Support/com.tinycast.app
-rm -rf ~/Library/Caches/com.tinycast.app
+rm -rf ~/Library/Application\ Support/com.mote.app
+rm -rf ~/Library/Caches/com.mote.app
+defaults delete com.mote.app 2>/dev/null || true
 ```
-
-Your snippets, notes and quicklinks live in that Application Support folder, so copy anything you
-want to keep out first.
-
-To remove a _different_ app and everything it left behind, Tinycast has a
-[built-in uninstaller](/docs/launcher/uninstall).

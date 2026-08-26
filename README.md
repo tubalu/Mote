@@ -26,6 +26,15 @@ CPU churn.
 - **Global hotkey** — one shortcut summons the palette from anywhere.
 - **Per-app hotkeys** — bind a key to an app; press it to toggle (focus/hide).
 
+## Install
+
+Download the latest DMG from [Releases](https://github.com/tubalu/Mote/releases). There is **no Homebrew cask**.
+
+```sh
+# after dragging Mote.app to Applications:
+xattr -dr com.apple.quarantine "/Applications/Mote.app"
+```
+
 ## Permissions
 
 **Accessibility** — needed for Hyper Key, double-tap modifiers, and a few system actions. You're
@@ -44,7 +53,7 @@ Security → Accessibility**. The launcher itself needs nothing.
 Requires **macOS 26+** and **Xcode 26**. First time:
 
 ```sh
-make install   # brew tools + leftover manual steps
+make install   # xcodegen/swiftlint (via Homebrew) + leftover manual steps
 make identity  # once: self-signed cert for local TCC grants
 ```
 

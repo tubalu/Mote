@@ -77,6 +77,5 @@ Accessibility once on their next update, then it's stable again.
 ## Quarantine (separate from signing)
 
 macOS quarantines anything downloaded from the internet, and Gatekeeper blocks even a correctly
-self-signed app with an "unverified developer" warning. The Homebrew cask runs
-`xattr -dr com.apple.quarantine` in `postflight`, so **brew users never touch it**. People who
+self-signed app with an "unverified developer" warning. People who
 download the DMG directly clear it once by hand.

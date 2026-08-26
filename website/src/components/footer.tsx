@@ -1,5 +1,5 @@
 import { site } from "../data/site";
-import { DiscordLogo, GitHubLogo, Logo } from "./ui/icon";
+import { GitHubLogo, Logo } from "./ui/icon";
 import { Link } from "./ui/link";
 import { MetaStrip } from "./ui/meta-strip";
 
@@ -39,15 +39,6 @@ export function Footer() {
           >
             <GitHubLogo size={16} />
             {repoPath}
-          </a>
-          <a
-            href={site.community.discord}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-2 text-small text-fg-muted transition-colors hover:text-fg"
-          >
-            <DiscordLogo size={16} />
-            Join the Discord
           </a>
         </div>
       </div>

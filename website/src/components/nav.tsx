@@ -5,15 +5,13 @@ import { useState } from "react";
 import { nav, site } from "../data/site";
 import { cn } from "../lib/cn";
 import { Button } from "./ui/button";
-import { AppleLogo, DiscordLogo, Logo } from "./ui/icon";
+import { AppleLogo, Logo } from "./ui/icon";
 import { Link } from "./ui/link";
 import { ThemeToggle } from "./ui/theme-toggle";
 
 export function Nav() {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
-  const discord = site.community.discord;
-
   return (
     <header className="fixed inset-x-0 top-4 z-50">
       <div className="container-page">
@@ -42,16 +40,6 @@ export function Nav() {
 
             <div className="hidden items-center gap-2 md:flex">
               <ThemeToggle />
-              <a
-                href={discord}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Join the Discord"
-                title="Join the Discord"
-                className="flex size-8 items-center justify-center rounded-md text-fg-muted transition-colors hover:bg-tint/5 hover:text-fg"
-              >
-                <DiscordLogo size={18} />
-              </a>
               <Button href="/#install" size="sm" className="gap-1">
                 <AppleLogo size={20} />
                 Download
@@ -104,16 +92,6 @@ export function Nav() {
                     {item.label}
                   </Link>
                 ))}
-                <a
-                  href={discord}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={close}
-                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-body font-medium text-fg-muted transition-colors hover:bg-tint/5 hover:text-fg"
-                >
-                  <DiscordLogo size={16} />
-                  Join the Discord
-                </a>
                 <div className="flex items-center justify-between gap-2 px-3 py-2.5">
                   <span className="text-body font-medium text-fg-muted">
                     Appearance
