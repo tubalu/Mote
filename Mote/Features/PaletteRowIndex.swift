@@ -2,21 +2,18 @@ import Foundation
 
 /// What a flat selection index resolves to. Section headers aren't selectable and take no index.
 enum PaletteRow: Equatable {
-    case calculator
     case element(section: Int, offset: Int)
 }
 
-/// A screen's visible row order: the calculator card at index 0 when present, then each section.
+/// A screen's visible row order: each section's rows, contiguous and in section order.
 struct PaletteRowIndex: Equatable {
-    let hasCalculator: Bool
     let sectionCounts: [Int]
 
-    init(hasCalculator: Bool = false, sectionCounts: [Int]) {
-        self.hasCalculator = hasCalculator
+    init(sectionCounts: [Int]) {
         self.sectionCounts = sectionCounts
     }
 
-    var count: Int { (hasCalculator ? 1 : 0) + sectionCounts.reduce(0, +) }
+    var count: Int { sectionCounts.reduce(0, +) }
 
     /// The selection the screen actually highlights: out-of-range values clamp into the results.
     func clamped(_ selection: Int) -> Int {
@@ -25,8 +22,7 @@ struct PaletteRowIndex: Equatable {
 
     func row(at index: Int) -> PaletteRow? {
         guard index >= 0, index < count else { return nil }
-        if hasCalculator, index == 0 { return .calculator }
-        var offset = hasCalculator ? index - 1 : index
+        var offset = index
         for (section, sectionCount) in sectionCounts.enumerated() {
             if offset < sectionCount { return .element(section: section, offset: offset) }
             offset -= sectionCount
@@ -40,6 +36,6 @@ struct PaletteRowIndex: Equatable {
             offset < sectionCounts[section]
         else { return nil }
         let preceding = sectionCounts[..<section].reduce(0, +)
-        return (hasCalculator ? 1 : 0) + preceding + offset
+        return preceding + offset
     }
 }

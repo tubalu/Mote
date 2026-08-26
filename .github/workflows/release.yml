@@ -1,10 +1,7 @@
 name: Release
 
-# Shown in the Actions list instead of a bare "Release" — carries the version + channel.
-run-name: "Tinycast ${{ inputs.version }} · ${{ inputs.channel }} #${{ github.run_number }}"
+run-name: "Mote ${{ inputs.version }} · ${{ inputs.channel }} #${{ github.run_number }}"
 
-# Manually triggered from the Actions tab. Pick a channel and a base version;
-# beta builds get an auto-incrementing suffix so re-running never collides.
 on:
   workflow_dispatch:
     inputs:
@@ -12,9 +9,9 @@ on:
         description: "Release channel"
         type: choice
         options: [beta, stable]
-        default: beta
+        default: stable
       version:
-        description: "Base version, e.g. 0.2.0 (no channel suffix)"
+        description: "Base version, e.g. 0.1.0 (no channel suffix)"
         type: string
         required: true
 
@@ -43,31 +40,29 @@ jobs:
         run: |
           CHANNEL="${{ github.event.inputs.channel }}"
           BASE_VERSION="${{ github.event.inputs.version }}"
-          # Each channel is a distinct, side-by-side app: its own display name + bundle id,
-          # and its own Homebrew cask in the abue-ammar/homebrew-tinycast tap.
           case "$CHANNEL" in
-            beta)   SUFFIX="-beta.${GITHUB_RUN_NUMBER}";  DISPLAY="Tinycast Beta";  BUNDLE="com.tinycast.app.beta";  CASK="tinycast@beta";  PRERELEASE=true ;;
-            stable) SUFFIX="";                            DISPLAY="Tinycast";       BUNDLE="com.tinycast.app";       CASK="tinycast";       PRERELEASE=false ;;
+            beta)   SUFFIX="-beta.${GITHUB_RUN_NUMBER}";  DISPLAY="Mote Beta";  BUNDLE="com.mote.app.beta";  PRERELEASE=true ;;
+            stable) SUFFIX="";                            DISPLAY="Mote";       BUNDLE="com.mote.app";       PRERELEASE=false ;;
           esac
           FULL="${BASE_VERSION}${SUFFIX}"
           {
             echo "full_version=${FULL}"
             echo "display_name=${DISPLAY}"
             echo "bundle_id=${BUNDLE}"
-            echo "cask_name=${CASK}"
-            echo "dmg_file=Tinycast-${FULL}.dmg"
-            echo "zip_file=Tinycast-${FULL}.zip"
+            echo "dmg_file=Mote-${FULL}.dmg"
+            echo "zip_file=Mote-${FULL}.zip"
             echo "prerelease=${PRERELEASE}"
           } >> "$GITHUB_OUTPUT"
 
-      # Import the stable self-signed identity into a temp keychain so every release is signed with
-      # the SAME cert — that constant signature is what keeps users' Accessibility (TCC) grant alive
-      # across updates. Generate/rotate the secrets per docs/signing.md.
       - name: Import signing certificate
         env:
           P12_BASE64: ${{ secrets.SIGNING_P12_BASE64 }}
           P12_PASSWORD: ${{ secrets.SIGNING_P12_PASSWORD }}
         run: |
+          if [ -z "${P12_BASE64}" ]; then
+            echo "::error::SIGNING_P12_BASE64 secret not set. See docs/signing.md."
+            exit 1
+          fi
           KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
           KPW="$(openssl rand -base64 24)"
           echo "${P12_BASE64}" | base64 --decode > "$RUNNER_TEMP/cert.p12"
@@ -75,14 +70,10 @@ jobs:
           security set-keychain-settings -lut 21600 "$KEYCHAIN"
           security unlock-keychain -p "$KPW" "$KEYCHAIN"
           security import "$RUNNER_TEMP/cert.p12" -k "$KEYCHAIN" -P "${P12_PASSWORD}" -A -T /usr/bin/codesign
-          # Let codesign use the key without an interactive prompt.
           security set-key-partition-list -S apple-tool:,apple: -s -k "$KPW" "$KEYCHAIN" >/dev/null
-          # Prepend to the search list so xcodebuild's codesign finds "Tinycast Self-Signed".
           security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | sed 's/"//g')
           rm -f "$RUNNER_TEMP/cert.p12"
 
-      # Build the signed .app into an ephemeral DerivedData dir. Channel identity (name, bundle id,
-      # version) comes from build-setting overrides so beta/stable ship side-by-side.
       - name: Build app
         env:
           VERSION: ${{ steps.meta.outputs.full_version }}
@@ -90,16 +81,14 @@ jobs:
           BUNDLE_ID: ${{ steps.meta.outputs.bundle_id }}
           BUILD_NUMBER: ${{ github.run_number }}
         run: |
-          xcodebuild -project Tinycast.xcodeproj -scheme Tinycast -configuration Release \
+          xcodebuild -project Mote.xcodeproj -scheme Mote -configuration Release \
             -derivedDataPath "$RUNNER_TEMP/DerivedData" \
-            CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="Tinycast Self-Signed" \
+            CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="Mote Self-Signed" \
             OTHER_CODE_SIGN_FLAGS="--timestamp=none" \
             PRODUCT_NAME="$DISPLAY_NAME" PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
             MARKETING_VERSION="$VERSION" CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
             build
 
-      # Two artifacts from one build: the DMG people download and the cask installs, and the zip
-      # the in-app updater installs — it expands with `ditto` instead of mounting a volume.
       - name: Package DMG and ZIP
         env:
           DISPLAY_NAME: ${{ steps.meta.outputs.display_name }}
@@ -112,126 +101,45 @@ jobs:
           ln -s /Applications "$STAGE/Applications"
           mkdir -p dist
           diskutil image create from "$STAGE" --format UDZO --volumeName "$DISPLAY_NAME" "dist/${DMG_FILE}"
-          # `ditto -c -k --keepParent --sequesterRsrc` is the only zip that leaves the code
-          # signature verifiable; plain `zip` drops symlinks and breaks the seal.
           ditto -c -k --keepParent --sequesterRsrc "$APP" "dist/${ZIP_FILE}"
 
       - uses: actions/upload-artifact@v7
         with:
-          name: Tinycast-${{ steps.meta.outputs.full_version }}
+          name: Mote-${{ steps.meta.outputs.full_version }}
           path: dist/
-
-      # The changelog GitHub derives from the merged PRs, with the install text below a marker the
-      # update window cuts at. Nothing is committed anywhere — see docs/release.md.
-      - name: Compose release notes
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          CHANNEL: ${{ github.event.inputs.channel }}
-          TAG: v${{ steps.meta.outputs.full_version }}
-          SHA: ${{ github.sha }}
-          VERSION: ${{ steps.meta.outputs.full_version }}
-          DISPLAY_NAME: ${{ steps.meta.outputs.display_name }}
-          BUNDLE_ID: ${{ steps.meta.outputs.bundle_id }}
-          CASK: ${{ steps.meta.outputs.cask_name }}
-        run: ./Scripts/release-notes.sh "$RUNNER_TEMP/notes.md" "$RUNNER_TEMP/changelog.md"
 
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
+          FULL: ${{ steps.meta.outputs.full_version }}
+          DMG_FILE: ${{ steps.meta.outputs.dmg_file }}
+          ZIP_FILE: ${{ steps.meta.outputs.zip_file }}
+          PRERELEASE: ${{ steps.meta.outputs.prerelease }}
         run: |
-          TAG="v${{ steps.meta.outputs.full_version }}"
+          TAG="v${FULL}"
+          NOTES="$(mktemp)"
+          {
+            echo "# Mote ${FULL}"
+            echo
+            echo "Lite macOS launcher — modified from [Tinycast](https://github.com/abue-ammar/tinycast). AGPL-3.0."
+            echo
+            echo "## Install"
+            echo
+            echo "1. Download \`${DMG_FILE}\`"
+            echo "2. Open it and drag **Mote** to Applications"
+            echo "3. Clear quarantine once:"
+            echo
+            echo '```sh'
+            echo 'xattr -dr com.apple.quarantine "/Applications/Mote.app"'
+            echo '```'
+          } > "$NOTES"
           PRERELEASE_FLAG=""
-          if [ "${{ steps.meta.outputs.prerelease }}" = "true" ]; then
+          if [ "$PRERELEASE" = "true" ]; then
             PRERELEASE_FLAG="--prerelease"
           fi
-          # --notes-file, never --generate-notes: gh prepends --notes to generated notes, which would
-          # put the install boilerplate back above the changelog.
           gh release create "$TAG" \
-            "dist/${{ steps.meta.outputs.dmg_file }}" \
-            "dist/${{ steps.meta.outputs.zip_file }}" \
-            --title "${{ steps.meta.outputs.display_name }} ${{ steps.meta.outputs.full_version }}" \
-            --notes-file "$RUNNER_TEMP/notes.md" \
+            "dist/${DMG_FILE}" \
+            "dist/${ZIP_FILE}" \
+            --title "Mote ${FULL}" \
+            --notes-file "$NOTES" \
             $PRERELEASE_FLAG
-
-      - name: Update Homebrew cask
-        env:
-          TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
-          CASK: ${{ steps.meta.outputs.cask_name }}
-          VERSION: ${{ steps.meta.outputs.full_version }}
-          DMG_FILE: ${{ steps.meta.outputs.dmg_file }}
-        run: |
-          if [ -z "${TAP_TOKEN}" ]; then
-            echo "::warning::HOMEBREW_TAP_TOKEN secret not set — skipping cask bump. Add it to enable auto-updates of the tap."
-            exit 0
-          fi
-          SHA="$(shasum -a 256 "dist/${DMG_FILE}" | awk '{print $1}')"
-          git clone --depth 1 "https://x-access-token:${TAP_TOKEN}@github.com/abue-ammar/homebrew-tinycast.git" tap
-          CASK_FILE="tap/Casks/${CASK}.rb"
-          if [ ! -f "$CASK_FILE" ]; then
-            echo "::error::$CASK_FILE not found in tap."
-            exit 1
-          fi
-          sed -i '' -E "s|^  version \".*\"|  version \"${VERSION}\"|" "$CASK_FILE"
-          sed -i '' -E "s|^  sha256 \".*\"|  sha256 \"${SHA}\"|" "$CASK_FILE"
-          cd tap
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "Casks/${CASK}.rb"
-          if git diff --cached --quiet; then
-            echo "No cask changes to commit."
-          else
-            git commit -m "${CASK} ${VERSION}"
-            git push
-          fi
-
-      # Announce the release in the Discord release channel. A Components V2 (flags 32768) card:
-      # channel-tinted container, title + right-aligned Download button, changelog, Homebrew block.
-      # No-ops with a warning if the webhook secret isn't set.
-      - name: Announce on Discord
-        if: success()
-        env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          CHANNEL: ${{ github.event.inputs.channel }}
-          DISPLAY_NAME: ${{ steps.meta.outputs.display_name }}
-          VERSION: ${{ steps.meta.outputs.full_version }}
-          CASK: ${{ steps.meta.outputs.cask_name }}
-          TAG: v${{ steps.meta.outputs.full_version }}
-        run: |
-          if [ -z "${DISCORD_WEBHOOK_URL}" ]; then
-            echo "::warning::DISCORD_WEBHOOK_URL secret not set — skipping Discord announcement."
-            exit 0
-          fi
-          if [ "${CHANNEL}" = "stable" ]; then COLOR=3066993; else COLOR=15844367; fi
-          RELEASE_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/${TAG}"
-          INSTALL="brew install --cask abue-ammar/tinycast/${CASK}"
-          # Build with jq so backticks stay literal (printf in single quotes escaped them,
-          # which Discord rendered as verbatim backticks instead of a code block).
-          # Components V2 forbids a top-level `content`, so @everyone is a text component, and
-          # without allowed_mentions Discord renders the ping as inert text.
-          jq -n \
-            --argjson color "${COLOR}" \
-            --arg heading "## 🚀 ${DISPLAY_NAME} ${VERSION}" \
-            --arg sub "Now available on the **${CHANNEL}** channel." \
-            --arg install "${INSTALL}" \
-            --arg url "${RELEASE_URL}" \
-            --rawfile changelog "${RUNNER_TEMP}/changelog.md" \
-            '{
-              flags: 32768,
-              allowed_mentions: { parse: ["everyone"] },
-              components: [
-                { type: 10, content: "@everyone" },
-                { type: 17, accent_color: $color, components: [
-                  { type: 9,
-                    components: [ { type: 10, content: ($heading + "\n" + $sub) } ],
-                    accessory: { type: 2, style: 5, label: "Download", url: $url }
-                  },
-                  { type: 14 },
-                  { type: 10, content: ($changelog | rtrimstr("\n")) },
-                  { type: 14 },
-                  { type: 10, content: ("**Install / update via Homebrew**\n```\n" + $install + "\n```") }
-                ] }
-              ]
-            }' > payload.json
-          curl -fsS -X POST -H "Content-Type: application/json" -d @payload.json \
-            "${DISCORD_WEBHOOK_URL}?with_components=true"

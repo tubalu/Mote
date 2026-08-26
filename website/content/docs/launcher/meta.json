@@ -5,9 +5,6 @@
     "favorites",
     "aliases",
     "system-settings",
-    "system-actions",
-    "commands",
-    "quicklinks",
-    "uninstall"
+    "system-actions"
   ]
 }

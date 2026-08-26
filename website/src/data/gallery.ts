@@ -1,16 +1,12 @@
-// Drives the "Tinycast in action" gallery + lightbox. Each item is a tile in
+// Drives the "in action" gallery + lightbox. Each item is a tile in
 // the grid and a slide in the lightbox. `src`/`thumb`/`poster` are resolved
 // against import.meta.env.BASE_URL in the component, so give plain filenames
-// that live in `public/`. `width`/`height` are the media's real pixel size
-// (used for lightbox aspect); the grid tile is always 16:9.
+// that live in `public/`.
 
 export type GalleryItem = {
   type: "image" | "video";
-  // Full-size media shown in the lightbox (image src, or video file for clips).
   src: string;
-  // Grid thumbnail; falls back to `poster` (video) or `src` (image).
   thumb?: string;
-  // Poster frame for video tiles/slides.
   poster?: string;
   title: string;
   caption: string;
@@ -24,41 +20,17 @@ export const galleryItems: GalleryItem[] = [
     src: "tinycast-in-action.mp4",
     poster: "screenshot.png",
     title: "Tinycast in action",
-    caption: "A quick tour — launcher, clipboard, calculator, and more.",
+    caption: "A quick tour of the launcher palette.",
     width: 3024,
     height: 1964,
   },
   {
     type: "image",
-    src: "calculator.png",
-    title: "Inline calculator",
-    caption: "Math, unit and currency conversions, right in the palette.",
-    width: 2148,
-    height: 1302,
-  },
-  {
-    type: "image",
-    src: "clipboard.png",
-    title: "Clipboard history",
-    caption: "Search every text and image you've copied. Always local.",
-    width: 2092,
-    height: 1268,
-  },
-  {
-    type: "image",
-    src: "unlimited-clipboard-history.png",
-    title: "Kept as long as you like",
-    caption: "Retention is yours to set, all the way up to forever.",
-    width: 2226,
-    height: 1604,
-  },
-  {
-    type: "image",
-    src: "emoji.png",
-    title: "Emoji & symbols",
-    caption: "Search the whole set; your most-used float to the top.",
-    width: 2106,
-    height: 1244,
+    src: "screenshot.png",
+    title: "App launcher",
+    caption: "Fuzzy-search apps, Settings panes, and system actions.",
+    width: 3024,
+    height: 1964,
   },
   {
     type: "image",
@@ -75,13 +47,5 @@ export const galleryItems: GalleryItem[] = [
     caption: "Under 100 MB of memory, a few megabytes on disk.",
     width: 2558,
     height: 1754,
-  },
-  {
-    type: "image",
-    src: "backup-import-settings.png",
-    title: "Backup & import",
-    caption: "Export your whole setup to one file, and restore it anywhere.",
-    width: 2098,
-    height: 1600,
   },
 ];

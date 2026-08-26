@@ -163,7 +163,7 @@ Mote/
   Palette/          the palette shell: PalettePanel, PaletteWindowController, RootPaletteView,
                     the PaletteScreen protocol, PaletteCoordinator, PaletteState, PaletteMode
   Windows/          the non-palette AppKit surfaces: AppWindowController, Dialog/, HUD/, About/
-  Assets.xcassets/  the app icon and the bundled image sets some catalog symbols resolve to
+  Assets.xcassets/  the app icon, bluetooth glyph, and About brand marks
   Features/
     PaletteRowIndex.swift   the flat selection index — palette-owned, so it sits at the top
     Launcher/ SystemActions/ HotKeys/ Onboarding/

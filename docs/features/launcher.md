@@ -95,7 +95,7 @@ still matches exactly, so a pasted identifier resolves.
 
 A query that *equals* a category's own name lists that whole category under its section header, in the
 order the section shows when the field is empty. Both words a kind already carries work — the section
-title and the singular label, `Snippets`/`Snippet`, `Window Management`/`Window Command` — read straight
+title and the singular label — read straight
 off `KindDescriptor` by `AppEntry.Kind.named(by:)`, so no category name is written a second time and a
 new `Kind` case gets its category word for free.
 

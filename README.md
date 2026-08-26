@@ -1,25 +1,20 @@
-# Tinycast
+# Mote
 
-A tiny, fully native macOS launcher — the essentials, without the bloat.
+A lite, native macOS menu-bar launcher — fuzzy app search, System Settings panes, system actions,
+and global / per-app hotkeys. SwiftUI + AppKit, zero third-party dependencies.
 
 <p align="center">
-  <a href="https://discord.gg/v2Eeb4QQy3">
-    <img alt="Join the Tinycast Discord"
-         src="https://img.shields.io/badge/Discord-Join%20the%20community-5865F2?style=flat&logo=discord&logoColor=white"></a>
-  <a href="mailto:iabueammar@gmail.com?subject=Hiring%20enquiry">
-    <img alt="Hire me — iabueammar@gmail.com"
-         src="https://img.shields.io/badge/Hire%20me-Let's%20talk-111111?style=flat&logo=gmail&logoColor=white"></a>
   <a href="LICENSE">
     <img alt="License: AGPL-3.0"
          src="https://img.shields.io/badge/License-AGPL--3.0-3DA639?style=flat"></a>
 </p>
 
 <p align="center">
-  <img src="docs/screenshot.png" alt="Tinycast command palette" width="720">
+  <img src="docs/screenshot.png" alt="Mote command palette" width="720">
 </p>
 
 Around **3 MB on disk** and **under 100 MB of RAM** — no Electron, no telemetry, no background
-CPU churn. Just SwiftUI + AppKit with zero dependencies. It's fast because there's nothing to it.
+CPU churn.
 
 ## Features
 
@@ -31,65 +26,44 @@ CPU churn. Just SwiftUI + AppKit with zero dependencies. It's fast because there
 - **Global hotkey** — one shortcut summons the palette from anywhere.
 - **Per-app hotkeys** — bind a key to an app; press it to toggle (focus/hide).
 
-## Install
-
-```sh
-brew trust --tap abue-ammar/tinycast   # required for third-party taps
-brew tap abue-ammar/tinycast
-brew install --cask tinycast          # stable
-brew install --cask tinycast@beta     # beta  (installs side-by-side)
-brew install --cask tinycast-sequoia  # stable channel  (macOS 15 Sequoia)
-```
-
-Tinycast also runs on macOS 15 Sequoia — install the `tinycast-sequoia` cask above.
-
-Each channel is a separate app (`Tinycast.app`, `Tinycast Beta.app`) with its own settings and
-permissions, so you can run stable next to the beta.
-
-Tinycast is self-signed. Installing via Homebrew clears the macOS quarantine flag for you
-automatically on every install and update, so there's nothing to run. (If you download the DMG
-directly from Releases instead, clear it once: `xattr -dr com.apple.quarantine
-"/Applications/Tinycast.app"`.)
-
 ## Permissions
 
-**Accessibility** — needed when Tinycast pastes or expands text into another app, and the only
-permission snippet keyword expansion needs. You're prompted when you first use a feature that needs
-it; grant access in **System Settings → Privacy & Security → Accessibility**. Snippets ship
-disabled, and keystrokes are matched locally, never stored and never sent anywhere.
+**Accessibility** — needed for Hyper Key, double-tap modifiers, and a few system actions. You're
+prompted when you first use a feature that needs it; grant access in **System Settings → Privacy &
+Security → Accessibility**. The launcher itself needs nothing.
 
 ## Using it
 
-1. Open **Settings → General** and record a global shortcut to summon Tinycast.
+1. Open **Settings → General** and record a global shortcut to summon the palette.
 2. Press it anywhere → the palette floats in. Type to filter, **↵** to launch.
-3. **Tab** switches between Apps and Clipboard; **↑/↓** move, **Esc** dismisses.
-4. **Settings → Shortcuts** — search an app or custom command and record a global shortcut.
-5. **Settings → Snippets** — enable the feature, then create templates with expansion keywords.
+3. **↑/↓** move the selection; **Esc** dismisses.
+4. **Settings → Shortcuts** — search an app and record a global shortcut to focus or hide it.
 
 ## Building from source
 
+Requires **macOS 26+** and **Xcode 26**. First time:
+
 ```sh
-make install   # leftover manual steps only
-make run       # Debug build and launch Tinycast Dev
+make install   # brew tools + leftover manual steps
+make identity  # once: self-signed cert for local TCC grants
 ```
 
-See **[docs/development.md](docs/development.md)** for the toolchain, signing, packaging and website.
+Daily loop:
 
-## Contributing
+```sh
+make           # Debug build → Mote Dev.app
+make run       # build and launch
+make CONFIG=Release build   # Release → Mote.app
+make test
+make lint
+```
 
-> [!IMPORTANT]
-> **Open an issue before you write code — this is mandatory.** Get the bug or the feature agreed on
-> first; discussing it in the issue (or on [Discord](https://discord.gg/v2Eeb4QQy3)) is strongly
-> encouraged. A PR with no agreed issue behind it gets closed however good the patch is, and the
-> work is wasted. Typo and docs-only fixes are the one exception.
+See **[docs/development.md](docs/development.md)** for toolchain and signing details.
 
-Read **[CONTRIBUTING.md](CONTRIBUTING.md)** first — it covers the memory budget every PR is held to,
-the before/after video requirement for visual changes, and why features get declined. Every PR fills
-in the **[pull request template](.github/PULL_REQUEST_TEMPLATE.md)**. Security issues go through
-[SECURITY.md](SECURITY.md), not the issue tracker.
+## Attribution & license
 
-Questions, ideas, or just want to follow along? **[Join the Discord](https://discord.gg/v2Eeb4QQy3)**.
+Mote is based on code from [Tinycast](https://github.com/abue-ammar/tinycast) by Abue Ammar, trimmed
+to a launcher-only surface. Both the original work and this modification are licensed under the
+[GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0).
 
-## License
-
-[AGPL-3.0](LICENSE)
+See [NOTICE.md](NOTICE.md).

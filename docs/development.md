@@ -38,8 +38,7 @@ never be used.
 
 Debug builds are a separate channel: **`Mote Dev.app`**, bundle id `com.mote.app.dev`. Every
 persisted thing is keyed by bundle id — `~/Library/Preferences/<id>.plist` (settings and hotkey
-bindings), `~/Library/Caches/<id>/` (clipboard history, calculator history, exchange rates, frequent
-emoji), `~/Library/Application Support/<id>/` (the onboarding marker, Notes and snippets), the
+bindings), `~/Library/Caches/<id>/` (launcher ranking), `~/Library/Application Support/<id>/` (the onboarding marker), the
 `SMAppService` login item, and the Accessibility / Input Monitoring (TCC) grants — so a local build can
 neither read nor clobber an installed app's state, and both run side by side.
 
@@ -125,7 +124,7 @@ and this script cannot disagree. `.swift-format` at the repo root tunes it to th
 stock config defaults to 2-space indent and rewrites all 200 files.
 
 Both `*.generated.swift` files are excluded: formatting one is hand-editing it, and the next
-`node Scripts/gen-emoji.js` would revert it. swift-format also refuses any file that does not parse, so
+swift-format also refuses any file that does not parse, so
 a failure from either command is a syntax error rather than a tooling problem — and it is why ⌘S looks
 like it does nothing while a file is mid-edit with unbalanced braces.
 

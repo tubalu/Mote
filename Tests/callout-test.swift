@@ -178,10 +178,7 @@ struct CalloutPlacementTests {
     // modes doesn't shift the column sideways; a glyph that outgrew the slot would break that.
 
     static func rowGrammar() {
-        expect(
-            Theme.Size.checkbox <= Theme.Size.rowIcon,
-            "the uninstall checkbox fits inside the shared leading slot")
-        expect(Theme.Size.checkbox > 0, "and is a real size")
+        expect(Theme.Size.rowIcon > 0, "the shared leading glyph slot is a real size")
     }
 
     // MARK: - Containers smaller than the callout

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0079A92831E132613694C5CD /* AccessibilityText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565ED9408E9F32AD6AC90EBA /* AccessibilityText.swift */; };
 		08B0716DC0E99082FF2281D4 /* SystemActionRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E04ACA3223A5B1BA6C5B9C /* SystemActionRunner.swift */; };
 		0C3BB7AA312382F7CEB813D0 /* SearchScopesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B832FF5845329C8E606790A4 /* SearchScopesSection.swift */; };
 		0F9A6769E27879587C31342D /* SpotlightNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8EDDA3A151193334FF4EA5 /* SpotlightNames.swift */; };
@@ -182,7 +181,6 @@
 		51CA632E94BC1C62B488AE6B /* OnboardingCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCoordinator.swift; sourceTree = "<group>"; };
 		5265964C4C69F13F56C64861 /* MessageHUDController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageHUDController.swift; sourceTree = "<group>"; };
 		539E412C86B3F08A44AFA672 /* VolumeSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeSlider.swift; sourceTree = "<group>"; };
-		565ED9408E9F32AD6AC90EBA /* AccessibilityText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityText.swift; sourceTree = "<group>"; };
 		5763CE22483B7A90F870EE8F /* PanelTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelTransition.swift; sourceTree = "<group>"; };
 		5992019DB6046AEB2BE130A8 /* AppIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconView.swift; sourceTree = "<group>"; };
 		5BDBBC8A75C1948BF8B9EBAF /* SettingsDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDetailView.swift; sourceTree = "<group>"; };
@@ -443,7 +441,6 @@
 			isa = PBXGroup;
 			children = (
 				E67266B90A4D53EA98A92EA3 /* Images */,
-				565ED9408E9F32AD6AC90EBA /* AccessibilityText.swift */,
 				7CE1AF0B57CF315DB7F11592 /* ActivationPolicy.swift */,
 				E2711F8756A8F2708FB46450 /* AppDisplayName.swift */,
 				CA2D6B6C7E4A2D21C7FD367F /* Appearance.swift */,
@@ -734,7 +731,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				62C43FF33F3906C3C9F9586B /* AboutView.swift in Sources */,
-				0079A92831E132613694C5CD /* AccessibilityText.swift in Sources */,
 				2905B03D396C5FB3DEB8117B /* ActivationPolicy.swift in Sources */,
 				A26714DF8758A39A67B691FC /* AliasStore.swift in Sources */,
 				9E46A261B04EBF2A1CA1D69B /* AppActionsMenu.swift in Sources */,

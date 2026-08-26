@@ -3,20 +3,18 @@ title: The palette
 description: The one window Tinycast has — how to move around it, and where it appears.
 ---
 
-Everything Tinycast does happens in one floating panel. Each feature is either the root launcher
-screen or a screen you reach from it, and every screen backs out to the launcher.
+Everything Tinycast does happens in one floating panel — the app launcher.
 
 ## Moving around
 
 | Key                       | Does                                                  |
 | ------------------------- | ----------------------------------------------------- |
 | <kbd>↵</kbd>              | The primary action for whatever is selected           |
-| <kbd>⌘</kbd><kbd>↵</kbd>  | The secondary action — usually Show in Finder or Copy |
+| <kbd>⌘</kbd><kbd>↵</kbd>  | The secondary action — usually Show in Finder         |
 | <kbd>⌘</kbd><kbd>K</kbd>  | Open the Actions menu for the selection               |
 | <kbd>↑</kbd> <kbd>↓</kbd> | Move the selection                                    |
-| <kbd>⇥</kbd>              | Cycle between the launcher and clipboard              |
-| <kbd>⎋</kbd>              | Leave a screen, or dismiss the palette                |
-| <kbd>⌫</kbd>              | On an empty field, step back one screen               |
+| <kbd>⎋</kbd>              | Dismiss the palette                                   |
+| <kbd>⌫</kbd>              | Clear the query                                       |
 | <kbd>⌘</kbd><kbd>,</kbd>  | Open Settings                                         |
 | <kbd>⌘</kbd><kbd>W</kbd>  | Close the window                                      |
 
@@ -35,19 +33,8 @@ If you have the muscle memory, these work anywhere in the palette:
 | <kbd>⌃</kbd><kbd>F</kbd> | <kbd>→</kbd> |
 | <kbd>⌃</kbd><kbd>B</kbd> | <kbd>←</kbd> |
 
-On the [emoji grid](/docs/features/emoji) all four move the selection. Everywhere else the
-horizontal pair falls through to the text caret, because moving a caret is what you usually mean
+The horizontal pair falls through to the text caret, because moving a caret is what you usually mean
 there. A chord with any extra modifier — <kbd>⌃</kbd><kbd>⇧</kbd><kbd>Q</kbd>, say — is left alone.
-
-### Tab is narrower than it looks
-
-<kbd>⇥</kbd> cycles the launcher and clipboard, and nothing else. Calculator History, Search
-Quicklinks and Uninstall stay out of the cycle deliberately — they are destinations you chose, not
-places to land in by accident.
-
-The exception: when the selected row declares arguments — a
-[quicklink](/docs/launcher/quicklinks) or an [extension command](/docs/extensions) that takes input
-— <kbd>⇥</kbd> walks those fields first.
 
 ## Where it opens
 

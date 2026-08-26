@@ -210,19 +210,18 @@ the arrow outside it, and AppKit's own alternation over the field came straight 
 ## One menu at a time
 
 `RootPaletteView` holds a single `OpenMenu?` rather than a flag per menu, so "at most one is open" is
-structural instead of a pair of `onChange` handlers pushing each other closed. Three cases today —
-the ⌘K Actions menu (`.bottomTrailing`), the app menu (`.bottomLeading`) and the clipboard type
-filter (`.topTrailing`, hung under its header button). `menuContent` resolves the open case to one
-`PopoverMenuContent`, which is what lets ↑/↓, plain ↵, Esc and the click-away catcher serve every
-menu without knowing which is up. Every open path goes through `open(_:highlighting:)` and states
-where the highlight starts: the first row, except the type filter, which opens on the active filter.
+structural instead of a pair of `onChange` handlers pushing each other closed. Two cases today —
+the ⌘K Actions menu (`.bottomTrailing`) and the app menu (`.bottomLeading`). `menuContent`
+resolves the open case to one `PopoverMenuContent`, which is what lets ↑/↓, plain ↵, Esc and the
+click-away catcher serve every menu without knowing which is up. Every open path goes through
+`open(_:highlighting:)` and states where the highlight starts: the first row.
 
 Every row closes the menu behind it — `activateMenuItem` is the one path, and a row that reorders the
 list under itself (Move Favorite Up/Down) is no exception, so no row ever runs against a rebuilt menu.
 
 ## Menu-open input freeze
 
-While a popover menu (⌘K Actions / app menu / clipboard type filter) is open the search field reads as inert but
+While a popover menu (⌘K Actions / app menu) is open the search field reads as inert but
 **never resigns first responder** — resigning makes the `NSTextField` swap between its field-editor
 and cell rendering, shifting the text / placeholder a point or two, so focus stays put. Input is
 frozen instead:
@@ -243,7 +242,7 @@ Most ⌘/⌃ chords reach SwiftUI's `onKeyPress` fine. Three kinds do not, and a
 - **A bare backspace** — the field editor consumes it as an edit (`onBareBackspace`).
 - **Chords with no main menu item** — ⌘, and ⌘w, which an app with a menu bar would never see here.
 - **The physical number-row slots.** `FavoriteSlots` matches ⌘1…⌘0 by key code before fixed command
-  chords, then publishes the resolved position to the active screen. Only the launcher and clipboard
+  chords, then publishes the resolved position to the active screen. Only the launcher
   screens intercept these slots; other screens keep their own ⌘-number shortcuts. The launcher's
   compact visibility setting is visual only and does not disable its favorite slots.
 - **Chords AppKit has already bound to a selector.** `⌘.` is the one that bites: AppKit binds it to
@@ -257,7 +256,7 @@ assuming the handler is wrong.
 
 ## Emacs navigation chords
 
-⌃N/⌃P and ⌃F/⌃B navigate exactly as ↓/↑ and →/← do — on the emoji grid all four step the selection,
+⌃N/⌃P and ⌃F/⌃B navigate exactly as ↓/↑ and →/← do —
 and everywhere else the horizontal pair falls through to the caret, which is what a native search field
 does.
 

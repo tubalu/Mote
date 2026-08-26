@@ -3,8 +3,8 @@ title: App launcher
 description: Fuzzy search across everything Tinycast knows about, and how results are ranked.
 ---
 
-The launcher is the root screen. It searches applications, System Settings panes, quicklinks,
-snippets, system actions, window commands, custom commands and built-in commands at once.
+The launcher is the root screen. It searches applications, System Settings panes, system actions
+and built-in commands at once.
 
 <kbd>↵</kbd> opens the selection. <kbd>⌘</kbd><kbd>K</kbd> shows everything else you can do with it.
 
@@ -12,8 +12,7 @@ snippets, system actions, window commands, custom commands and built-in commands
 
 Favorites first, then each category in a fixed order:
 
-Applications → System Settings → Quicklinks → Snippets → System Actions → Window Management →
-Custom Commands → Commands
+Applications → System Settings → System Actions → Commands
 
 Once you type, that structure collapses into a single **Results** list ordered by relevance.
 
@@ -26,7 +25,7 @@ those letters buried in it.
 | Band | Field                                           | Matches on                           |
 | ---- | ----------------------------------------------- | ------------------------------------ |
 | 6    | Your [alias](/docs/launcher/aliases)            | Exact or prefix only                 |
-| 5    | Display name, and a snippet's keyword           | Exact, prefix, word-start, substring |
+| 5    | Display name                                   | Exact, prefix, word-start, substring |
 | 4    | Spotlight alternate names; alias substring hits | Literal                              |
 | 3    | Display name                                    | Subsequence                          |
 | 2    | Spotlight alternate names                       | Subsequence                          |

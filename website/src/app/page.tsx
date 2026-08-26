@@ -5,7 +5,6 @@ import { Gallery } from "../components/gallery";
 import { Hero } from "../components/hero";
 import { Install } from "../components/install";
 import { Nav } from "../components/nav";
-import { Switch } from "../components/switch";
 import { ScrollTop } from "../components/ui/scroll-top";
 
 export default function HomePage() {
@@ -17,7 +16,6 @@ export default function HomePage() {
         <Gallery />
         <Features />
         <Ethos />
-        <Switch />
         <Install />
       </main>
       <Footer />
