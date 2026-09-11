@@ -63,6 +63,7 @@ If a change touches anything in the right column, the harness on the left is man
 | `entry-icon-test` | `EntryIcon` — that each case draws, caches and prints apart from the others |
 | `system-action-test` | `SystemActions/Model/SystemAction.swift` |
 | `volume-test` | `SystemActions/Model/VolumeLevel.swift` |
+| `window-tiling-test` | `WindowTiling/Model/WindowTiling.swift` |
 | `settings-history-test` | `Settings/SettingsTab.swift`, `SettingsHistory.swift` |
 | `appearance-test` | `Platform/Appearance.swift`, `DesignSystem/Theme.swift`, `AppAppearance` |
 | `scroll-reveal-test` | `DesignSystem/Scrolling/SelectionReveal.swift` |
