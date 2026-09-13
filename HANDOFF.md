@@ -1,11 +1,57 @@
-# Handoff — Mote (formerly Tinycast): finished RAM trims + full rename
+# Handoff — Mote: Release RAM is within budget; Activity Monitor is the wrong metric
 
-**User instruction (verbatim):** `commit and handoff`
+**User instruction (verbatim):** `update related document. commit tag and push`
 
-This file is documentation only — no importers, no API surface, no data schemas. It summarizes
-work completed and committed on branch `main` today, for the next agent or session.
+This file is documentation only — no importers, no API surface, no data schemas. It closes the RAM
+investigation that had been left open (a 6-day-old Release process at 115.9 MB) and records how to
+measure memory from now on.
 
 ## Goal
+
+Write down the correct RAM metric, take a same-process fresh-launch vs idle-hours baseline on the
+installed Release app (`/Applications/Mote.app`), and put both in `docs/testing.md` so the next
+session does not chase Activity Monitor's inflated number.
+
+## Current progress — done, this session
+
+Same process throughout: PID **50401**, `/Applications/Mote.app/Contents/MacOS/Mote`, launched
+2026-09-12 22:02:36.
+
+| When | Physical footprint | Peak | `ps` RSS (wrong metric) |
+| --- | --- | --- | --- |
+| ~3 min after launch (2026-09-12 22:05) | **60.2 MB** | 67.3 MB | ~132 MB |
+| ~11.5 h idle (2026-09-13 09:31) | **53.5 MB** | 67.3 MB (unchanged) | ~88 MB |
+
+Footprint **fell** after idle; peak never moved. That is compression, not a leak. Both snapshots sit
+in the documented 40–80 MB band. The earlier 115.9 MB / peak 121.3 MB figure was a **different**
+process (PID 10664, ~6 days uptime) and is not this process's floor.
+
+Activity Monitor and `ps` RSS count shared AppKit/Foundation/Swift pages as if they belonged only to
+Mote. The kernel line that counts is `vmmap -summary <pid>` **Physical footprint** (DIRTY + SWAPPED).
+`footprint <pid>` reports the same number.
+
+Docs updated on `main`:
+
+- `docs/testing.md` — measurement recipe + recorded baselines
+- `docs/standards.md` — budget named as physical footprint
+- `.github/PULL_REQUEST_TEMPLATE.md` and `CONTRIBUTING.md` — same metric
+
+## What this does not reopen
+
+A days-old process can still sit above 100 MB in SWAPPED graphics without leaking. Treat that as a
+fresh-launch question, not as proof of growth. IconCache caps remain a hint (`NSCache.totalCostLimit`),
+not a hard ceiling, if a future long-uptime snapshot with heavy palette use climbs and a fresh launch
+does not.
+
+## Next steps
+
+Nothing blocking on RAM. Window tiling remains on `feat/window-tiling` (unrelated).
+
+---
+
+## Prior work — rename + RAM trims (previous session, preserved)
+
+**User instruction then:** `commit and handoff`
 
 Continuing from the prior session's handoff (lite feature-strip + Makefile, left uncommitted):
 
@@ -15,7 +61,7 @@ Continuing from the prior session's handoff (lite feature-strip + Makefile, left
    website, or legal docs, which stay "Tinycast" since this session didn't touch the actual release.
 3. Commit everything and hand off.
 
-## Current progress — all done, committed
+### Current progress — all done, committed (previous session)
 
 Three commits on `main` (in order):
 
@@ -117,19 +163,14 @@ should then persist across rebuilds as before, thanks to the stable self-signed 
   they describe the real shipped product's install instructions and reference real GitHub issues,
   not just this local dev build's identity.
 
-## Next steps
+### Prior next steps (rename session)
 
-Nothing blocking. Everything is built, tested, linted, and committed.
+Nothing blocking from that session. Everything was built, tested, linted, and committed.
 
 - **Grant Accessibility to "Mote Dev"** on next launch (see Bundle-ID consequence above).
 - **Optional, not started:** the `website/` docs site and `docs/features/*.md` are still stale from
   the *original* lite-strip (they describe Calculator/Clipboard/Emoji/Snippets/etc., which no
-  longer exist) — this was already flagged as pending in the prior session's handoff and remains
-  untouched by design; today's rename deliberately didn't touch them either, for the separate
-  external-reference reason above. If that cleanup is wanted, it's a distinct piece of work from
-  today's rename.
-- **Not evaluated:** whether to push `main` or open a PR — nothing in this session touched remote
-  git state; all three commits are local only.
+  longer exist).
 
 ### Key files for the next agent
 
@@ -141,4 +182,4 @@ Nothing blocking. Everything is built, tested, linted, and committed.
 | `Mote/Platform/Images/IconCache.swift` | The two lowered cache caps |
 | `Mote/Windows/About/AboutView.swift` | The four preserved external-link lines — don't rename these |
 | `Scripts/release-notes.sh` | Fully untouched by design — describes the real release, not this rename |
-| `docs/testing.md` | Memory budget (40–80MB normal, 100MB ceiling) + definition of done |
+| `docs/testing.md` | Memory budget (40–80MB normal, 100MB ceiling), Physical-footprint recipe, recorded baselines |

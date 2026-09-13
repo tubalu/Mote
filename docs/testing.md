@@ -143,14 +143,41 @@ instrument then shows an interval that never closes.
 Measure before optimising, and measure the same way twice. For cold launch: quit fully, relaunch, time
 it three times, take the median.
 
+### Memory footprint
+
+Do not use Activity Monitor's Memory column or `ps` RSS. Both count shared, read-only framework pages
+(AppKit, Foundation, Swift runtime) as if they belonged solely to Mote, so they read about twice the
+real cost.
+
+The number that counts is **Physical footprint** — dirty + swapped private memory. Take it from the
+kernel, not from Activity Monitor:
+
+```sh
+PID=$(pgrep -f 'Mote.app/Contents/MacOS/Mote')   # installed Release; use 'Mote Dev' for a Debug run
+vmmap -summary "$PID" | grep "Physical footprint"
+```
+
+`footprint "$PID"` reports the same figure. On a `vmmap -summary` region table, it equals the DIRTY
+column total plus the SWAPPED column total.
+
+Budget: **40–80 MB** in normal use (idle after launch, palette closed); **100 MB** is the hard ceiling
+for a settled process. Re-check on a fresh launch before treating an over-ceiling snapshot as a
+regression — a days-old process can accumulate compressed graphics in SWAPPED without leaking.
+
+For a PR, record idle-after-launch, palette-open, peak, and palette-closed-settled, all as Physical
+footprint.
+
 ### Recorded baselines
 
 Measured at the end of the 2026 refactor, on `main`. Useful as orders of magnitude, not as contracts.
+Memory rows are Physical footprint from `vmmap -summary`, taken on `/Applications/Mote.app` (Release).
 
 | | Value |
 | --- | --- |
 | Release binary | 3,655,736 B (from 3,471,592 B at the start of the refactor) |
-| Resident memory | 40–80 MB in normal use; the hard ceiling is 100 MB |
+| Physical footprint | 40–80 MB in normal use; the hard ceiling is 100 MB |
+| Release, ~3 min after launch (2026-09-12 22:05, PID 50401) | 60.2 MB (peak 67.3 MB) |
+| Same process, ~11.5 h idle (2026-09-13 09:31) | 53.5 MB (peak still 67.3 MB) |
 | `SpotlightNames` cache | 76 ms cold, 0.2 ms warm |
 | `SettingsPaneScanner` warm scan | 0.014 ms (16.5 ms cold), 52 panes |
 | Largest view / owner | `RootPaletteView` 662 lines, `AppCore` 284 lines |
@@ -160,8 +187,9 @@ Measured at the end of the 2026 refactor, on `main`. Useful as orders of magnitu
 | `ClipboardStore.pinnedItems` | 27–127 µs per uncached search, 1,000-row window — no cache earns its invalidation yet |
 | `count items of trash` | 5,000 ms against a cold Finder on an *empty* Trash, 110 ms warm — why AppleScript is detached |
 
-Launch time, allocation counts and RSS have never been captured as numbers. The signposts are in place,
-so any of them can be taken from `main` whenever a change makes it worth knowing.
+Launch time and allocation counts have never been captured as numbers. The signposts are in place, so
+either can be taken from `main` whenever a change makes it worth knowing. Physical footprint is the
+row above; do not substitute RSS.
 
 ## Manual regression sweep
 

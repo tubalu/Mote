@@ -8,7 +8,9 @@ Closes #
 
 ## Memory footprint
 
-<!-- Required. Under 100 MB always, and back to baseline after the palette closes. -->
+<!-- Required. Under 100 MB always, and back to baseline after the palette closes.
+     Use `vmmap -summary <pid>` Physical footprint — not Activity Monitor, not `ps` RSS.
+     Recipe: docs/testing.md § Memory footprint. -->
 
 | Step                    | Memory |
 | ----------------------- | ------ |
