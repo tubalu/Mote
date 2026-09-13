@@ -145,6 +145,12 @@ final class AppIndex {
         let favoritesRevision: Int
     }
 
+    /// One `.app`'s path and mtime — cheap enough to check on every open, unlike reading its bundle.
+    private struct BundleFingerprint: Equatable, Sendable {
+        let path: String
+        let modified: Date?
+    }
+
     /// Repeated renders for the same query reuse the ranking instead of re-matching every frame.
     @ObservationIgnored private var matchMemo = Memo<MatchKey, [AppEntry]>()
     @ObservationIgnored private var resultsMemo = Memo<ResultsKey, [AppEntry]>()
@@ -163,6 +169,8 @@ final class AppIndex {
     private var discoveredEntries: [AppEntry] = []
     private var alternateNameCache = SpotlightNames.Cache()
     private var paneCache: SettingsPaneScanner.Cache?
+    /// What `scan` last saw on disk, so an unchanged app set skips every Bundle/Spotlight read.
+    private var scopeFingerprint: [BundleFingerprint] = []
     private var isRefreshing = false
     /// Set when a refresh lands mid-scan, so a scope edit is never silently dropped.
     private var refreshPending = false
@@ -210,11 +218,15 @@ final class AppIndex {
             let scopes = settings?.searchScopes ?? SearchScopes.defaults
             let reusing = alternateNameCache
             let reusingPanes = paneCache
-            let (found, cache, panes) = await Task.detached(priority: .utility) {
+            let lastFingerprint = scopeFingerprint
+            let (found, cache, panes, fingerprint) = await Task.detached(priority: .utility) {
                 AppIndex.scan(
                     scopes: scopes, cache: SpotlightNames.Cache(reusing: reusing),
-                    paneCache: reusingPanes)
+                    paneCache: reusingPanes, lastFingerprint: lastFingerprint)
             }.value
+            scopeFingerprint = fingerprint
+            // Nil means the fingerprint matched: nothing was read, so there is nothing to publish.
+            guard let found else { continue }
             alternateNameCache = cache
             paneCache = panes
             guard found != discoveredEntries else { continue }
@@ -223,14 +235,36 @@ final class AppIndex {
         } while refreshPending
     }
 
+    /// Cheap enough to run on every open — unlike reading each bundle to build an `AppEntry`.
+    nonisolated private static func currentFingerprint(for urls: [URL]) -> [BundleFingerprint] {
+        urls.map {
+            BundleFingerprint(
+                path: $0.path,
+                modified: (try? $0.resourceValues(forKeys: [.contentModificationDateKey]))?
+                    .contentModificationDate)
+        }
+    }
+
+    /// `entries` is nil when `lastFingerprint` still matches: the caller keeps what it has.
     nonisolated private static func scan(
-        scopes: [String], cache: SpotlightNames.Cache, paneCache: SettingsPaneScanner.Cache?
-    ) -> ([AppEntry], SpotlightNames.Cache, SettingsPaneScanner.Cache?) {
+        scopes: [String], cache: SpotlightNames.Cache, paneCache: SettingsPaneScanner.Cache?,
+        lastFingerprint: [BundleFingerprint]
+    ) -> (
+        entries: [AppEntry]?, cache: SpotlightNames.Cache, paneCache: SettingsPaneScanner.Cache?,
+        fingerprint: [BundleFingerprint]
+    ) {
         Signposts.interval("AppIndex.scan") {
+            let urls = SearchScopes.appBundles(in: scopes)
+            let fingerprint = currentFingerprint(for: urls)
+            // Same paths, same mtimes: nothing moved on disk, so skip every Bundle/Spotlight read.
+            guard fingerprint != lastFingerprint else {
+                return (nil, cache, paneCache, fingerprint)
+            }
+
             var cache = cache
             var seenBundleIDs = Set<String>()
             var result: [AppEntry] = []
-            for url in SearchScopes.appBundles(in: scopes) {
+            for url in urls {
                 let bundle = Bundle(url: url)
                 let bundleID = bundle?.bundleIdentifier
                 // Dedup by bundle id; the earliest scope wins.
@@ -256,7 +290,7 @@ final class AppIndex {
             }
             // Settings panes are `.appex` bundles, which carry no Spotlight alternate names.
             let (panes, panesCache) = SettingsPaneScanner.scan(cache: paneCache)
-            return (apps + panes, cache, panesCache)
+            return (apps + panes, cache, panesCache, fingerprint)
         }
     }
 

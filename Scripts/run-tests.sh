@@ -97,6 +97,7 @@ run entry-icon-test        Mote/Platform/Appearance.swift \
                            Mote/Platform/Images/IconCache.swift
 run system-action-test     Mote/Features/SystemActions/Model/SystemAction.swift
 run volume-test            Mote/Features/SystemActions/Model/VolumeLevel.swift
+run window-tiling-test     Mote/Features/WindowTiling/Model/WindowTiling.swift
 run settings-history-test  Mote/Features/Settings/SettingsTab.swift \
                            Mote/Features/Settings/SettingsHistory.swift
 

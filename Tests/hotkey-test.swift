@@ -102,6 +102,15 @@ struct DoubleTapDetectorTests {
             Set(HotKeyAction.builtInActions)
                 .isSuperset(of: Set(CommandID.allCases.compactMap(\.hotKeyAction))),
             "every bindable command appears among the built-in hotkey actions")
+        expect(
+            HotKeyAction.builtInActions == [.togglePalette, .moveWindow, .resizeWindow],
+            "built-ins are palette, move window, resize window")
+        expect(
+            HotKeyAction.moveWindow.defaultsKey == "hotkey.window.move",
+            "move window persists under hotkey.window.move")
+        expect(
+            HotKeyAction.resizeWindow.defaultsKey == "hotkey.window.resize",
+            "resize window persists under hotkey.window.resize")
     }
 
     // MARK: - The Hyper chord

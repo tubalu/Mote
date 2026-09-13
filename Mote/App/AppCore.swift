@@ -36,6 +36,7 @@ final class AppCore {
         settingsCoordinator: settingsCoordinator,
         systemActionCoordinator: systemActionCoordinator,
         core: self)
+    @ObservationIgnored private(set) lazy var windowTilingCoordinator = WindowTilingCoordinator()
 
     @ObservationIgnored private lazy var windowController = PaletteWindowController(core: self)
     @ObservationIgnored private lazy var messageHUD = MessageHUDController(settings: settings)
@@ -67,6 +68,8 @@ final class AppCore {
             hotKeys.doubleTapMonitor.healthTicker = healthTicker
 
             hotKeys.onTogglePalette = { [weak self] in self?.paletteCoordinator.togglePalette() }
+            hotKeys.onMoveWindow = { [weak self] in self?.windowTilingCoordinator.move() }
+            hotKeys.onResizeWindow = { [weak self] in self?.windowTilingCoordinator.resize() }
             hotKeys.onRunSystemAction = { [weak self] id in
                 self?.systemActionCoordinator.runSystemAction(id: id)
             }
@@ -79,6 +82,7 @@ final class AppCore {
                 self?.systemActionCoordinator.presentSystemActionFailure(id: id, failure: failure)
             }
             hotKeys.start()
+            windowTilingCoordinator.installDefaultBindings(into: hotKeys)
             // Keeps running while Carbon pauses: the recorder needs its rewritten flags.
             hyperKeyTap.start(settings: settings)
 
@@ -107,7 +111,7 @@ final class AppCore {
         case .settingsPane(let bundleID):
             return appIndex.apps.first { $0.kind == .systemSettings && $0.bundleID == bundleID }?
                 .name
-        case .togglePalette, .systemAction:
+        case .togglePalette, .moveWindow, .resizeWindow, .systemAction:
             return nil
         }
     }
