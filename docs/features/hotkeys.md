@@ -44,9 +44,12 @@ but the guarantee that every decode runs through the initializer that masks devi
 `SettingsBackup.HotkeyBackup` stores the same values, so the backup file carries this shape too; only
 export → import within one build is guaranteed to round-trip.
 
-`hotkey.togglePalette` is the one built-in with no command row. No `CommandID` currently carries a
-`hotKeyAction`; Settings, About and Quit open from the launcher. Per-app, per-pane and system-action
-chords are the rest of `HotKeyAction`.
+Built-ins with no command row: `hotkey.togglePalette` (App Launcher), `hotkey.window.move` (Move
+Window), `hotkey.window.resize` (Resize Window). No `CommandID` currently carries a `hotKeyAction`;
+Settings, About and Quit open from the launcher. Palette stays unbound until the user records one.
+Move and Resize seed ⌃⌥← / ⌃⌥→ once when those chords are free (`windowTiling.defaultsInstalled`).
+Using them calls `Permissions.ensureAccessibility()` — see [window-tiling.md](window-tiling.md).
+Per-app, per-pane and system-action chords are the rest of `HotKeyAction`.
 
 A hidden launcher row does not disable its shortcut.
 

@@ -16,12 +16,13 @@ Independently of the folder tree, every mature subsystem has converged on the sa
 │                                                                            │
 │ SearchRelevance · SearchScopes · LauncherRankingStore · PaletteRowIndex ·  │
 │ SystemAction · VolumeLevel · DoubleTap{Modifier,Detector} · AppSettingsKey │
+│ WindowTiling                                                               │
 └──────────────────────────────────┬─────────────────────────────────────────┘
                                    │ consumed by
 ┌─ EFFECT ─────────────────────────▼─────────────────────────────────────────┐
 │ All platform I/O, one folder per feature.                                  │
 │ AppIndex · SpotlightNames · SettingsPaneScanner ·                          │
-│ IconCache · SystemActionRunner ·                                           │
+│ IconCache · SystemActionRunner · FrontmostWindowRunner ·                   │
 │ HotKeyCenter · HyperKeyTap · DoubleTapMonitor · RunningAppsMonitor         │
 └──────────────────────────────────┬─────────────────────────────────────────┘
                                    │ published through
@@ -166,7 +167,7 @@ Mote/
   Assets.xcassets/  the app icon, bluetooth glyph, and About brand marks
   Features/
     PaletteRowIndex.swift   the flat selection index — palette-owned, so it sits at the top
-    Launcher/ SystemActions/ HotKeys/ Onboarding/
+    Launcher/ SystemActions/ HotKeys/ Onboarding/ WindowTiling/
     Settings/       the Settings shell only: SettingsCoordinator, the sidebar/detail/toolbar and
                     navigation types, SettingsTab, AppSettings, AppSettingsKey, and Panes/ for the
                     two panes no feature owns

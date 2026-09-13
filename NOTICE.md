@@ -13,3 +13,9 @@ codebase derived from Tinycast. Modifications in this fork are licensed under th
 ## This distribution
 
 Mote is licensed under the GNU Affero General Public License v3 — see [LICENSE](LICENSE).
+
+## Window tiling geometry (TinyWin / Rectangle)
+
+`Mote/Features/WindowTiling/Model/WindowTiling.swift` is adapted from TinyWin, a personal fork of
+Rectangle by Ryan Hanson, which is based on Spectacle by Eric Czarny. That geometry is MIT-licensed.
+See <https://github.com/rxhanson/Rectangle>. Mote as a whole remains AGPL-3.0.

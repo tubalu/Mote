@@ -1,7 +1,7 @@
 # Window tiling in Mote (TinyWin cycle)
 
 Date: 2026-09-11
-Status: approved direction; waiting on spec review before the implementation plan
+Status: implemented
 
 Mote becomes the daily-driver menu-bar app. TinyWin’s two-shortcut window cycle ships **inside Mote**.
 The TinyWin git repo (`/Users/yong/code/tinyWindow`) stays a separate project. We do not merge git

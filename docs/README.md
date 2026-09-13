@@ -23,7 +23,8 @@ open with an `## Invariants` section; read it before changing anything in that a
 
 [palette](features/palette.md) ·
 [launcher](features/launcher.md) ·
-[hotkeys](features/hotkeys.md)
+[hotkeys](features/hotkeys.md) ·
+[window tiling](features/window-tiling.md)
 
 ## Contributing
 

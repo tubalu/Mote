@@ -29,3 +29,12 @@ These are fixed and not configurable. For shortcuts you record yourself, see
 | <kbd>⌘</kbd><kbd>↵</kbd>                          | Show in Finder                       |
 | <kbd>⌃</kbd><kbd>⇧</kbd><kbd>Q</kbd>              | Quit Application (running apps only) |
 | <kbd>⌘</kbd><kbd>1</kbd>–<kbd>⌘</kbd><kbd>5</kbd> | Launch a compact-bar favorite        |
+
+## Outside the palette
+
+These are global. Rebind them in Settings → General.
+
+| Key                                 | Does |
+| ----------------------------------- | ---- |
+| <kbd>⌃</kbd><kbd>⌥</kbd><kbd>←</kbd> | Move the frontmost window (same size: right → center → left) |
+| <kbd>⌃</kbd><kbd>⌥</kbd><kbd>→</kbd> | Resize the frontmost window (full height; 1/3, 1/2, 2/3, or full width) |

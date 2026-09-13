@@ -38,7 +38,7 @@ system-wide chord, and HIToolbox's TIS APIs remain the public input-source mecha
 | `Mote/Platform/` | system shims: `Permissions`, `AppPaths`, `Signposts`, `NotificationToken`, … |
 | `Mote/Palette/` | the palette shell: panel, window controller, `RootPaletteView`, `PaletteScreen` |
 | `Mote/Windows/` | the non-palette AppKit surfaces: `Dialog/`, `HUD/`, `About/`, `AppWindowController` |
-| `Mote/Features/` | one folder per feature; larger ones split `Model/` `Service/` `UI/` `Settings/` |
+| `Mote/Features/` | one folder per feature (Launcher, SystemActions, HotKeys, Onboarding, WindowTiling); larger ones split `Model/` `Service/` `UI/` `Settings/` |
 | `Tests/` | the standalone harnesses — one Swift file each, no XCTest target |
 | `Scripts/` | every executable script: test runner, data generators, packaging, linting, editor setup |
 

@@ -3,20 +3,16 @@ title: Hotkeys
 description: Recording global shortcuts, double-tap modifiers, and the Hyper key.
 ---
 
-**Tinycast ships with nothing bound.** Every shortcut is one you record.
+The palette (**App Launcher**) ships unbound — record a shortcut in Settings → General. Move Window
+and Resize Window seed <kbd>⌃</kbd><kbd>⌥</kbd><kbd>←</kbd> / <kbd>⌃</kbd><kbd>⌥</kbd><kbd>→</kbd>
+once if those chords are free. Everything else is one you record.
 
 ## What can take a shortcut
 
 - The palette itself (**App Launcher**)
-- The built-in commands: Search Files, Clipboard History, Search Emoji & Symbols, Show Notes,
-  Create Note, Search Notes
+- **Move Window** and **Resize Window** (frontmost window tiling)
 - Every application, and every System Settings pane
-- Every quicklink, custom command and extension command
-- All 31 [system actions](/docs/launcher/system-actions)
-- All 30 [window commands](/docs/features/window-management)
-
-A built-in command's shortcut appears in two panes — Settings → Commands and its own feature pane —
-but it is **one binding, not two settings**.
+- All [system actions](/docs/launcher/system-actions)
 
 ## Recording one
 
@@ -101,9 +97,8 @@ it stops until the session is active again.
 
 **Hiding a launcher row does not disable its shortcut.** Hiding changes what search shows.
 
-**Disabling a feature does disable its shortcuts.** File Search, Notes, window commands, quicklinks,
-custom commands and system actions all re-check their feature switch before running, so a registered
-shortcut for a disabled feature does nothing.
+**Disabling a feature does disable its shortcuts.** System actions re-check their feature switch
+before running, so a registered shortcut for a disabled feature does nothing.
 
 A [system action's confirmation](/docs/launcher/system-actions#confirmation) applies to its hotkey
 exactly as it does in the palette.

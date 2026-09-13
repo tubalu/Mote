@@ -45,7 +45,10 @@ does not.
 
 ## Next steps
 
-Nothing blocking on RAM. Window tiling remains on `feat/window-tiling` (unrelated).
+Window tiling is merged on `main` (PR #1). Task 6 (docs + NOTICE) is the leftover this session
+closes. RAM is within budget — see above.
+
+Nothing blocking after that commit.
 
 ---
 
