@@ -165,8 +165,9 @@ this model:
 
 Budgets, not aspirations:
 
-- **Resident memory under 100 MB, always.** No feature is worth going over. Memory returns to baseline
-  after the palette closes.
+- **Physical footprint under 100 MB, always.** That is the `vmmap -summary <pid>` line, not Activity
+  Monitor and not `ps` RSS. No feature is worth going over. Memory returns to baseline after the
+  palette closes. Recipe: [testing.md](testing.md#memory-footprint).
 - Release binary under **4 MB**.
 - Launch is the thing the app protects most. Work added to `AppCore.start()` or to an initialiser is the
   most expensive place to put it; defer it into a `Task` or do it on first use.

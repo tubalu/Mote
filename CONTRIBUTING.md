@@ -7,7 +7,9 @@ Check existing [issues](https://github.com/abue-ammar/tinycast/issues) and
 
 ## Non-negotiables
 
-- **RAM.** Under 100 MB, always. No feature is worth going over.
+- **RAM.** Under 100 MB, always. No feature is worth going over. Measure with
+  `vmmap -summary <pid>` **Physical footprint**, not Activity Monitor — recipe in
+  [`docs/testing.md`](docs/testing.md#memory-footprint).
 - **No leaks.** Leak-test before you submit. Zero leaks, no retain cycles, memory back to baseline
   after the palette closes.
 - **Design.** New UI must look like it shipped with the app — spacing, type, radii and motion from the
