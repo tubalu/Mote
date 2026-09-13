@@ -31,12 +31,20 @@ struct GeneralSettingsView: View {
                 SettingsRow(title: "App Launcher") {
                     ShortcutRecorder(action: .togglePalette)
                 }
+                SettingsRow(title: "Move Window") {
+                    ShortcutRecorder(action: .moveWindow)
+                }
+                SettingsRow(title: "Resize Window") {
+                    ShortcutRecorder(action: .resizeWindow)
+                }
             } header: {
                 Text("Global Shortcuts")
             } footer: {
-                Text("Summon the fuzzy app launcher.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                Text(
+                    "Launcher summons the palette. Move and Resize tile the frontmost window (full height; 1/3, 1/2, 2/3, or full width). Quit TinyWin if both apps fight over ⌃⌥← / ⌃⌥→."
+                )
+                .font(.caption)
+                .foregroundStyle(.secondary)
             }
 
             Section {
