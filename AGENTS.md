@@ -110,6 +110,6 @@ Each item is explained in [testing.md](docs/testing.md#definition-of-done).
 
 ## Shipping
 
-A git tag is not a release. After pushing `vX.Y.Z`, dispatch the Release workflow and wait until
-the GitHub Release has `Mote-X.Y.Z.dmg` and `.zip` — source-code archives do not count. Recipe:
-[release.md](docs/release.md).
+Pushing `vX.Y.Z` starts the Release workflow. Wait until the GitHub Release has `Mote-X.Y.Z.dmg`
+and `.zip` — source-code archives do not count. `main` alone does not ship. Recipe:
+[release.md](docs/release.md). Signing secrets: [signing.md](docs/signing.md) §2.

@@ -1,8 +1,11 @@
 name: Release
 
-run-name: "Mote ${{ inputs.version }} · ${{ inputs.channel }} #${{ github.run_number }}"
+run-name: "Mote ${{ github.event.inputs.version || github.ref_name }} #${{ github.run_number }}"
 
 on:
+  push:
+    tags:
+      - "v*.*.*"
   workflow_dispatch:
     inputs:
       channel:
@@ -37,14 +40,36 @@ jobs:
 
       - name: Compute release metadata
         id: meta
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_CHANNEL: ${{ github.event.inputs.channel }}
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
-          CHANNEL="${{ github.event.inputs.channel }}"
-          BASE_VERSION="${{ github.event.inputs.version }}"
+          if [ "$EVENT_NAME" = "push" ]; then
+            RAW="${REF_NAME#v}"
+            if [[ "$RAW" =~ ^[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$ ]]; then
+              CHANNEL=beta
+              FULL="$RAW"
+            elif [[ "$RAW" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              CHANNEL=stable
+              FULL="$RAW"
+            else
+              echo "::error::Tag v${RAW} is not vMAJOR.MINOR.PATCH or vMAJOR.MINOR.PATCH-beta.N"
+              exit 1
+            fi
+          else
+            CHANNEL="$INPUT_CHANNEL"
+            case "$CHANNEL" in
+              beta)   FULL="${INPUT_VERSION}-beta.${GITHUB_RUN_NUMBER}" ;;
+              stable) FULL="$INPUT_VERSION" ;;
+              *) echo "::error::Unknown channel ${CHANNEL}"; exit 1 ;;
+            esac
+          fi
           case "$CHANNEL" in
-            beta)   SUFFIX="-beta.${GITHUB_RUN_NUMBER}";  DISPLAY="Mote Beta";  BUNDLE="com.mote.app.beta";  PRERELEASE=true ;;
-            stable) SUFFIX="";                            DISPLAY="Mote";       BUNDLE="com.mote.app";       PRERELEASE=false ;;
+            beta)   DISPLAY="Mote Beta"; BUNDLE="com.mote.app.beta"; PRERELEASE=true ;;
+            stable) DISPLAY="Mote";      BUNDLE="com.mote.app";      PRERELEASE=false ;;
           esac
-          FULL="${BASE_VERSION}${SUFFIX}"
           {
             echo "full_version=${FULL}"
             echo "display_name=${DISPLAY}"

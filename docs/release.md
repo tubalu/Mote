@@ -61,22 +61,31 @@ open one**. See [testing.md](testing.md#definition-of-done).
 
 ## Releasing
 
-**A git tag is not a release.** `release.yml` is `workflow_dispatch` only — pushing `vX.Y.Z` never
-builds the app. The two “Source code” zips on a tag page are GitHub’s repo archive, not Mote.
+Pushing `vMAJOR.MINOR.PATCH` (or `vMAJOR.MINOR.PATCH-beta.N`) **starts the Release workflow**.
+Pushing `main` alone does not — that would mint a DMG on every commit.
 
-After the tag is on origin, always dispatch and wait for **`Mote-X.Y.Z.dmg` and `Mote-X.Y.Z.zip`**:
+The two “Source code” zips on a tag page are GitHub’s repo archive. A real ship has
+**`Mote-X.Y.Z.dmg` and `Mote-X.Y.Z.zip`**. Wait for the Actions run to attach them:
 
 ```sh
-gh workflow run Release --field channel=stable --field version=X.Y.Z
+git tag vX.Y.Z
+git push origin vX.Y.Z
 gh run watch
 ```
 
-Or **Actions → Release → Run workflow**: channel `stable` or `beta`, version the base semver
-(e.g. `0.1.2`). Beta gets an auto-incrementing `-beta.N` suffix (`N` = the Actions run number).
+Manual fallback (same workflow): **Actions → Release → Run workflow**, or
+
+```sh
+gh workflow run Release --field channel=stable --field version=X.Y.Z
+```
+
+Beta from the form still appends `-beta.N` (`N` = the Actions run number). A beta **tag** already
+named `vX.Y.Z-beta.N` is used as-is.
 
 Each channel builds a distinct app (`Mote.app` / `Mote Beta.app`) with its own bundle id, alongside
-the local `Mote Dev.app`. It builds on a `macos-26` runner with Xcode 26 and publishes a GitHub
-Release tagged `v<full-version>` with those two assets, marked prerelease for beta.
+the local `Mote Dev.app`. It builds on a `macos-26` runner with Xcode 26. Secrets
+`SIGNING_P12_BASE64` and `SIGNING_P12_PASSWORD` must be set ([signing.md](signing.md) §2) or the
+run dies at import.
 
 ### Release notes
 
@@ -89,8 +98,8 @@ CHANNEL=beta TAG=v0.9.13-beta.61 ./Scripts/release-notes.sh /tmp/body.md /tmp/di
 
 The changelog itself comes from GitHub's own release-notes API, which lists every merged PR with its
 author and number — so contributors are credited without anyone maintaining a `CHANGELOG.md`, and
-without Conventional Commits. **Nothing is ever committed to this repo**: the tag is created
-server-side by `gh release create`, and no release, bot or version-bump commit exists.
+without Conventional Commits. A tag-push run attaches assets to the tag you pushed; a form run lets
+`gh release create` make the tag if it is missing. No version-bump commit is written back to `main`.
 
 Two details the script exists for:
 
