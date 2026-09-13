@@ -1,0 +1,21 @@
+---
+description: A git tag is not a release — always dispatch the Release workflow
+alwaysApply: true
+---
+
+# Shipping a Mote version
+
+Pushing `vMAJOR.MINOR.PATCH` does **not** build the app. The Release workflow is `workflow_dispatch` only.
+
+After `git tag` + `git push origin vX.Y.Z` (stable), always run:
+
+```sh
+gh workflow run Release --field channel=stable --field version=X.Y.Z
+gh run watch
+```
+
+Do not stop until the GitHub Release for that tag has **`Mote-X.Y.Z.dmg` and `Mote-X.Y.Z.zip`**. The two “Source code” archives GitHub adds to a tag are not a build.
+
+Beta: `channel=beta` and the version is the base semver (the workflow appends `-beta.N`).
+
+Full recipe: [docs/release.md](docs/release.md).

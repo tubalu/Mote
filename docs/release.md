@@ -61,17 +61,22 @@ open one**. See [testing.md](testing.md#definition-of-done).
 
 ## Releasing
 
-`.github/workflows/release.yml` builds and publishes a DMG from GitHub Actions, no local machine
-needed. Run it from the **Actions** tab (`Release` → **Run workflow**) and pick:
+**A git tag is not a release.** `release.yml` is `workflow_dispatch` only — pushing `vX.Y.Z` never
+builds the app. The two “Source code” zips on a tag page are GitHub’s repo archive, not Mote.
 
-- **channel** — `beta` or `stable`. Each builds a distinct app (`Mote Beta.app` / `Mote.app`)
-  with its own bundle id, alongside the local `Mote Dev.app`. Beta gets an auto-incrementing
-  `-beta.N` suffix (`N` = the Actions run number) so re-running never collides; stable ships the
-  version as-is.
-- **version** — base semver, e.g. `0.2.0`.
+After the tag is on origin, always dispatch and wait for **`Mote-X.Y.Z.dmg` and `Mote-X.Y.Z.zip`**:
 
-It builds on a `macos-26` runner with Xcode 26 and publishes a GitHub Release tagged
-`v<full-version>` with a versioned DMG and zip asset, marked prerelease for beta.
+```sh
+gh workflow run Release --field channel=stable --field version=X.Y.Z
+gh run watch
+```
+
+Or **Actions → Release → Run workflow**: channel `stable` or `beta`, version the base semver
+(e.g. `0.1.2`). Beta gets an auto-incrementing `-beta.N` suffix (`N` = the Actions run number).
+
+Each channel builds a distinct app (`Mote.app` / `Mote Beta.app`) with its own bundle id, alongside
+the local `Mote Dev.app`. It builds on a `macos-26` runner with Xcode 26 and publishes a GitHub
+Release tagged `v<full-version>` with those two assets, marked prerelease for beta.
 
 ### Release notes
 

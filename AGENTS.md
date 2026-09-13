@@ -107,3 +107,9 @@ Each item is explained in [testing.md](docs/testing.md#definition-of-done).
 - `./Scripts/lint.sh` is clean.
 - `grep -rln 'import AppKit\|import SwiftUI\|import Cocoa' Mote/Features/*/Model/` returns nothing.
 - Any doc your change made wrong is fixed in the same commit.
+
+## Shipping
+
+A git tag is not a release. After pushing `vX.Y.Z`, dispatch the Release workflow and wait until
+the GitHub Release has `Mote-X.Y.Z.dmg` and `.zip` — source-code archives do not count. Recipe:
+[release.md](docs/release.md).
