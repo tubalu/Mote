@@ -3,8 +3,10 @@ import Foundation
 /// Everything in Mote a global shortcut can be bound to.
 enum HotKeyAction: Hashable, Sendable {
     case togglePalette
-    case moveWindow
-    case resizeWindow
+    case tileLeft
+    case tileRight
+    case moveLeft
+    case moveRight
     case app(bundleID: String)
     case settingsPane(bundleID: String)
     case systemAction(id: SystemAction.ID)
@@ -13,8 +15,11 @@ enum HotKeyAction: Hashable, Sendable {
     var defaultsKey: String {
         switch self {
         case .togglePalette: "hotkey.togglePalette"
-        case .moveWindow: "hotkey.window.move"
-        case .resizeWindow: "hotkey.window.resize"
+        // Tile Left/Right keep the Move/Resize keys so existing ⌃⌥←/→ bindings still fire.
+        case .tileLeft: "hotkey.window.move"
+        case .tileRight: "hotkey.window.resize"
+        case .moveLeft: "hotkey.window.move.left"
+        case .moveRight: "hotkey.window.move.right"
         case .app(let bundleID): "hotkey.app." + bundleID
         case .settingsPane(let bundleID): "hotkey.pane." + bundleID
         case .systemAction(let id): "hotkey.systemAction." + id.rawValue
@@ -23,6 +28,6 @@ enum HotKeyAction: Hashable, Sendable {
 
     /// The fixed actions every install can bind; the per-item catalogs extend them at launch.
     static let builtInActions: [HotKeyAction] = [
-        .togglePalette, .moveWindow, .resizeWindow
+        .togglePalette, .tileLeft, .tileRight, .moveLeft, .moveRight
     ]
 }

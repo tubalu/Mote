@@ -10,28 +10,29 @@ Geometry is MIT (Rectangle / TinyWin / Spectacle) — see [NOTICE.md](../../NOTI
   put cycle math in the runner.
 - **`Model/WindowTiling.swift` is Foundation + CoreGraphics only** — no AppKit, no SwiftUI. The
   harness `window-tiling-test` compiles the shipped file.
-- **Defaults seed once.** `windowTiling.defaultsInstalled` is set the first time
-  `installDefaultBindings` runs. ⌃⌥← Move and ⌃⌥→ Resize are installed only when that action has no
-  binding and no other Mote action owns the chord. Clearing a binding later does not re-steal it.
+- **Defaults seed once per pair.** `windowTiling.defaultsInstalled` gates ⌃⌥← Tile Left and ⌃⌥→ Tile
+  Right. `windowTiling.moveShiftDefaultsInstalled` gates ⌃⇧← Move Left and ⌃⇧→ Move Right. Each action
+  is installed only when it has no binding and no other Mote action owns the chord. Clearing a binding
+  later does not re-steal it.
 - **Quit TinyWin if both apps fight over ⌃⌥← / ⌃⌥→.** Carbon gives the chord to whoever registered
   first; two processes cannot share it.
-- **Using Move or Resize calls `Permissions.ensureAccessibility()`.** Untrusted, no window, or AX
+- **Using Tile or Move calls `Permissions.ensureAccessibility()`.** Untrusted, no window, or AX
   failure: beep and return. No HUD, no mover fallback chain.
 
 ## Cycle
 
-Resize does not slide the window. Space on the right grows the right edge (1/3 → 1/2 → 2/3 → full)
-when the left edge still lines up with a named slot. No space on the right shrinks from the left and
-keeps the right edge (full → 2/3 → 1/2 → 1/3, flush right). A **1/3 window flush right** becomes
-**full**. Full, or no space on either side, starts shrinking from **2/3 flush right**. Center 1/3
-expanding right becomes **2/3 flush right**.
+Tile pins the pressed edge. Already flush on that edge (or full): shrink Full → 2/3 → 1/2 → 1/3 →
+full, still pinned. Not flush: jump to **2/3** on that edge. ⌃⌥← is the left-edge mirror of ⌃⌥→.
 
-Move keeps size and cycles alignment: **right → center → left → right**. Full is a no-op.
+Move keeps size and steps toward the pressed edge through center: right ⇄ center ⇄ left. Already on
+that edge stays; full is a no-op.
 
 Tolerance is `0.08` of screen width; the space threshold is `max(40, screen.width * 0.08)`.
 
 ## Wiring
 
-`AppCore` owns one `WindowTilingCoordinator`. Closures `onMoveWindow` / `onResizeWindow` are set
-before `hotKeys.start()`; `installDefaultBindings` runs after. Recorders sit in Settings → General
-next to App Launcher — no palette rows, no `CommandID`, no extra Settings tab.
+`AppCore` owns one `WindowTilingCoordinator`. Closures `onTileLeft` / `onTileRight` / `onMoveLeft` /
+`onMoveRight` are set before `hotKeys.start()`; `installDefaultBindings` runs after. Recorders sit in
+Settings → General next to App Launcher — no palette rows, no `CommandID`, no extra Settings tab.
+Tile Left persists as `hotkey.window.move` and Tile Right as `hotkey.window.resize` so existing
+bindings keep firing.

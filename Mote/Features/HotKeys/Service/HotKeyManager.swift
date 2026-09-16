@@ -5,8 +5,10 @@ import Foundation
 @Observable
 final class HotKeyManager {
     var onTogglePalette: (() -> Void)?
-    var onMoveWindow: (() -> Void)?
-    var onResizeWindow: (() -> Void)?
+    var onTileLeft: (() -> Void)?
+    var onTileRight: (() -> Void)?
+    var onMoveLeft: (() -> Void)?
+    var onMoveRight: (() -> Void)?
     var onRunSystemAction: ((SystemAction.ID) -> Void)?
     /// Names what only the stores know; the fixed catalogs resolve here. Set in `AppCore.start()`.
     var displayName: ((HotKeyAction) -> String?)?
@@ -102,7 +104,7 @@ final class HotKeyManager {
             var set = Set(boundPaneBundleIDs)
             if binding == nil { set.remove(bundleID) } else { set.insert(bundleID) }
             UserDefaults.standard.set(Array(set), forKey: boundPaneKey)
-        case .togglePalette, .moveWindow, .resizeWindow, .systemAction:
+        case .togglePalette, .tileLeft, .tileRight, .moveLeft, .moveRight, .systemAction:
             break
         }
         candidateActionsCache = nil
@@ -149,10 +151,14 @@ final class HotKeyManager {
         switch action {
         case .togglePalette:
             return "App Launcher"
-        case .moveWindow:
-            return "Move Window"
-        case .resizeWindow:
-            return "Resize Window"
+        case .tileLeft:
+            return "Tile Left"
+        case .tileRight:
+            return "Tile Right"
+        case .moveLeft:
+            return "Move Left"
+        case .moveRight:
+            return "Move Right"
         case .app(let bundleID), .settingsPane(let bundleID):
             return displayName?(action) ?? bundleID
         case .systemAction(let id):
@@ -181,8 +187,10 @@ final class HotKeyManager {
     private func perform(_ action: HotKeyAction) {
         switch action {
         case .togglePalette: onTogglePalette?()
-        case .moveWindow: onMoveWindow?()
-        case .resizeWindow: onResizeWindow?()
+        case .tileLeft: onTileLeft?()
+        case .tileRight: onTileRight?()
+        case .moveLeft: onMoveLeft?()
+        case .moveRight: onMoveRight?()
         case .app(let bundleID): AppLauncher.toggle(bundleID: bundleID)
         case .settingsPane(let bundleID): AppLauncher.openSettingsPane(bundleID: bundleID)
         case .systemAction(let id): onRunSystemAction?(id)

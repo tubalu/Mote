@@ -25,8 +25,9 @@ CPU churn.
   palette or a global hotkey.
 - **Global hotkey** — one shortcut summons the palette from anywhere.
 - **Per-app hotkeys** — bind a key to an app; press it to toggle (focus/hide).
-- **Window tiling** — ⌃⌥← moves and ⌃⌥→ resizes the frontmost window (full height; 1/3, 1/2, 2/3, or
-  full width). Rebind in Settings → General. Quit TinyWin if both apps fight over those chords.
+- **Window tiling** — ⌃⌥← / ⌃⌥→ pin an edge and shrink Full → 2/3 → 1/2 → 1/3 → Full; ⌃⇧← / ⌃⇧→ move
+  the same size through center. Rebind in Settings → General. Quit TinyWin if both apps fight over
+  ⌃⌥← / ⌃⌥→.
 
 ## Install
 
@@ -48,7 +49,8 @@ Settings → Privacy & Security → Accessibility**. The launcher itself needs n
 1. Open **Settings → General** and record a global shortcut to summon the palette.
 2. Press it anywhere → the palette floats in. Type to filter, **↵** to launch.
 3. **↑/↓** move the selection; **Esc** dismisses.
-4. **⌃⌥←** / **⌃⌥→** tile the frontmost window (quit TinyWin if those chords do nothing).
+4. **⌃⌥←** / **⌃⌥→** tile the frontmost window; **⌃⇧←** / **⌃⇧→** move it (quit TinyWin if those
+   chords do nothing).
 5. **Settings → Shortcuts** — search an app and record a global shortcut to focus or hide it.
 
 ## Building from source

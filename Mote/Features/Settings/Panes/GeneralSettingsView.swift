@@ -31,17 +31,25 @@ struct GeneralSettingsView: View {
                 SettingsRow(title: "App Launcher") {
                     ShortcutRecorder(action: .togglePalette)
                 }
-                SettingsRow(title: "Move Window") {
-                    ShortcutRecorder(action: .moveWindow)
+                SettingsRow(title: "Tile Left") {
+                    ShortcutRecorder(action: .tileLeft)
                 }
-                SettingsRow(title: "Resize Window") {
-                    ShortcutRecorder(action: .resizeWindow)
+                SettingsRow(title: "Tile Right") {
+                    ShortcutRecorder(action: .tileRight)
+                }
+                SettingsRow(title: "Move Left") {
+                    ShortcutRecorder(action: .moveLeft)
+                }
+                SettingsRow(title: "Move Right") {
+                    ShortcutRecorder(action: .moveRight)
                 }
             } header: {
                 Text("Global Shortcuts")
             } footer: {
                 Text(
-                    "Launcher summons the palette. Move and Resize tile the frontmost window (full height; 1/3, 1/2, 2/3, or full width). Quit TinyWin if both apps fight over ⌃⌥← / ⌃⌥→."
+                    "Launcher summons the palette. Tile pins an edge and shrinks "
+                        + "Full → 2/3 → 1/2 → 1/3 → Full (⌃⌥← / ⌃⌥→). Move slides the same size "
+                        + "through center (⌃⇧← / ⌃⇧→). Quit TinyWin if both apps fight over ⌃⌥← / ⌃⌥→."
                 )
                 .font(.caption)
                 .foregroundStyle(.secondary)

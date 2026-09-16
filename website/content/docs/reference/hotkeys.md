@@ -3,14 +3,16 @@ title: Hotkeys
 description: Recording global shortcuts, double-tap modifiers, and the Hyper key.
 ---
 
-The palette (**App Launcher**) ships unbound — record a shortcut in Settings → General. Move Window
-and Resize Window seed <kbd>⌃</kbd><kbd>⌥</kbd><kbd>←</kbd> / <kbd>⌃</kbd><kbd>⌥</kbd><kbd>→</kbd>
-once if those chords are free. Everything else is one you record.
+The palette (**App Launcher**) ships unbound — record a shortcut in Settings → General. Tile Left
+and Tile Right seed <kbd>⌃</kbd><kbd>⌥</kbd><kbd>←</kbd> / <kbd>⌃</kbd><kbd>⌥</kbd><kbd>→</kbd>
+once if those chords are free. Move Left and Move Right seed
+<kbd>⌃</kbd><kbd>⇧</kbd><kbd>←</kbd> / <kbd>⌃</kbd><kbd>⇧</kbd><kbd>→</kbd> the same way.
+Everything else is one you record.
 
 ## What can take a shortcut
 
 - The palette itself (**App Launcher**)
-- **Move Window** and **Resize Window** (frontmost window tiling)
+- **Tile Left**, **Tile Right**, **Move Left**, and **Move Right** (frontmost window tiling)
 - Every application, and every System Settings pane
 - All [system actions](/docs/launcher/system-actions)
 

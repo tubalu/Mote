@@ -233,9 +233,9 @@ caches, TCC grants and login item, so this cannot disturb an installed copy.
 - A conflicting binding is rejected and names its current owner
 - A double-tap binding fires; Hyper Key remaps and its status dot is green
 - Every binding survives quit and relaunch
-- ⌃⌥→ resizes the frontmost window through 1/3–1/2–2/3–full; ⌃⌥← moves the same size
-  right→center→left; 1/3 flush right then Resize is full screen; full screen then Move is a no-op;
-  beep without Accessibility. Quit TinyWin if both apps own those chords.
+- ⌃⌥→ / ⌃⌥← tile the frontmost window (flush on that edge shrinks Full → 2/3 → 1/2 → 1/3 → full;
+  otherwise jump to 2/3). ⌃⇧← / ⌃⇧→ move the same size through center; full screen then Move is a
+  no-op; beep without Accessibility. Quit TinyWin if both apps own ⌃⌥← / ⌃⌥→.
 
 ### System actions
 

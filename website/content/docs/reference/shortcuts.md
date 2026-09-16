@@ -36,5 +36,7 @@ These are global. Rebind them in Settings → General.
 
 | Key                                 | Does |
 | ----------------------------------- | ---- |
-| <kbd>⌃</kbd><kbd>⌥</kbd><kbd>←</kbd> | Move the frontmost window (same size: right → center → left) |
-| <kbd>⌃</kbd><kbd>⌥</kbd><kbd>→</kbd> | Resize the frontmost window (full height; 1/3, 1/2, 2/3, or full width) |
+| <kbd>⌃</kbd><kbd>⌥</kbd><kbd>←</kbd> | Tile left: pin the left edge, shrink Full → 2/3 → 1/2 → 1/3 → Full |
+| <kbd>⌃</kbd><kbd>⌥</kbd><kbd>→</kbd> | Tile right: same cycle, right edge pinned |
+| <kbd>⌃</kbd><kbd>⇧</kbd><kbd>←</kbd> | Move left: slide the same size through center |
+| <kbd>⌃</kbd><kbd>⇧</kbd><kbd>→</kbd> | Move right: slide the same size through center |
