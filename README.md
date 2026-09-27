@@ -25,8 +25,8 @@ CPU churn.
   palette or a global hotkey.
 - **Global hotkey** — one shortcut summons the palette from anywhere.
 - **Per-app hotkeys** — bind a key to an app; press it to toggle (focus/hide).
-- **Window tiling** — ⌃⌥← / ⌃⌥→ pin an edge and shrink Full → 2/3 → 1/2 → 1/3 → Full; ⌃⇧← / ⌃⇧→ move
-  the same size through center. Rebind in Settings → General. Quit TinyWin if both apps fight over
+- **Window tiling** — ⌃⌥↑ maximizes; ⌃⌥← / ⌃⌥→ step left ½ ⇄ left ⅔ ⇄ right ⅔ ⇄ right ½, entering
+  at ⅔ from anywhere else; ⌃⇧← / ⌃⇧→ move the same size through center. Rebind in Settings → General. Quit TinyWin if both apps fight over
   ⌃⌥← / ⌃⌥→.
 
 ## Install

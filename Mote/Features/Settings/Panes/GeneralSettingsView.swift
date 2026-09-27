@@ -31,6 +31,9 @@ struct GeneralSettingsView: View {
                 SettingsRow(title: "App Launcher") {
                     ShortcutRecorder(action: .togglePalette)
                 }
+                SettingsRow(title: "Maximize") {
+                    ShortcutRecorder(action: .maximize)
+                }
                 SettingsRow(title: "Tile Left") {
                     ShortcutRecorder(action: .tileLeft)
                 }
@@ -47,8 +50,9 @@ struct GeneralSettingsView: View {
                 Text("Global Shortcuts")
             } footer: {
                 Text(
-                    "Launcher summons the palette. Tile pins an edge and shrinks "
-                        + "Full → 2/3 → 1/2 → 1/3 → Full (⌃⌥← / ⌃⌥→). Move slides the same size "
+                    "Launcher summons the palette. Maximize fills the screen (⌃⌥↑). Tile steps "
+                        + "½ ⇄ ⅔ ⇄ ⅔ ⇄ ½ across the screen, entering at ⅔ on the arrow's side "
+                        + "(⌃⌥← / ⌃⌥→). Move slides the same size "
                         + "through center (⌃⇧← / ⌃⇧→). Quit TinyWin if both apps fight over ⌃⌥← / ⌃⌥→."
                 )
                 .font(.caption)

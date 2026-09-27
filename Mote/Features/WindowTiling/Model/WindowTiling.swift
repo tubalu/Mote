@@ -3,15 +3,6 @@ import Foundation
 
 enum WindowTileSize: Int, CaseIterable, Equatable {
     case third, half, twoThirds, full
-
-    var nextSmaller: WindowTileSize? {
-        switch self {
-        case .full: return .twoThirds
-        case .twoThirds: return .half
-        case .half: return .third
-        case .third: return nil
-        }
-    }
 }
 
 enum WindowTileAlign: Int, CaseIterable, Equatable {
@@ -26,6 +17,13 @@ struct WindowTileState: Equatable {
 }
 
 enum WindowTiling {
+    static let chain: [WindowTileState] = [
+        WindowTileState(size: .half, align: .left),
+        WindowTileState(size: .twoThirds, align: .left),
+        WindowTileState(size: .twoThirds, align: .right),
+        WindowTileState(size: .half, align: .right),
+    ]
+
     static func state(of window: CGRect, in screen: CGRect) -> WindowTileState {
         guard screen.width > 1 else { return .full }
         let inset = spaceThreshold(in: screen)
@@ -43,10 +41,11 @@ enum WindowTiling {
 
     static func tiled(_ state: WindowTileState, toward edge: WindowTileAlign) -> WindowTileState {
         guard edge != .center else { return state }
-        if state.isFull || state.align == edge {
-            return shrink(state, pinning: edge)
+        guard let index = chain.firstIndex(of: state) else {
+            return WindowTileState(size: .twoThirds, align: edge)
         }
-        return WindowTileState(size: .twoThirds, align: edge)
+        let step = edge == .left ? -1 : 1
+        return chain[min(max(index + step, 0), chain.count - 1)]
     }
 
     static func moved(_ state: WindowTileState, toward edge: WindowTileAlign) -> WindowTileState {
@@ -100,13 +99,6 @@ enum WindowTiling {
         if ratio >= 0.58 { return .twoThirds }
         if ratio >= 0.42 { return .half }
         return .third
-    }
-
-    private static func shrink(_ state: WindowTileState, pinning edge: WindowTileAlign)
-        -> WindowTileState
-    {
-        guard let smaller = state.size.nextSmaller else { return .full }
-        return WindowTileState(size: smaller, align: edge)
     }
 
     private static func spaceThreshold(in screen: CGRect) -> CGFloat {

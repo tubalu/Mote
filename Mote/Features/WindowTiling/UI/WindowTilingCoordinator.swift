@@ -5,6 +5,11 @@ import Carbon.HIToolbox
 final class WindowTilingCoordinator {
     private static let defaultsInstalledKey = "windowTiling.defaultsInstalled"
     private static let moveShiftDefaultsInstalledKey = "windowTiling.moveShiftDefaultsInstalled"
+    private static let maximizeDefaultsInstalledKey = "windowTiling.maximizeDefaultsInstalled"
+
+    func maximize() {
+        apply { _ in .full }
+    }
 
     func tile(toward edge: WindowTileAlign) {
         apply { WindowTiling.tiled($0, toward: edge) }
@@ -15,24 +20,25 @@ final class WindowTilingCoordinator {
     }
 
     func installDefaultBindings(into hotKeys: HotKeyManager) {
-        seedArrowPair(
-            flag: Self.defaultsInstalledKey,
-            left: .tileLeft, right: .tileRight,
-            modifiers: [.control, .option], into: hotKeys)
-        seedArrowPair(
-            flag: Self.moveShiftDefaultsInstalledKey,
-            left: .moveLeft, right: .moveRight,
-            modifiers: [.control, .shift], into: hotKeys)
+        let tile: NSEvent.ModifierFlags = [.control, .option]
+        seedOnce(flag: Self.defaultsInstalledKey) {
+            seed(.tileLeft, keyCode: Int(kVK_LeftArrow), modifiers: tile, into: hotKeys)
+            seed(.tileRight, keyCode: Int(kVK_RightArrow), modifiers: tile, into: hotKeys)
+        }
+        seedOnce(flag: Self.moveShiftDefaultsInstalledKey) {
+            let move: NSEvent.ModifierFlags = [.control, .shift]
+            seed(.moveLeft, keyCode: Int(kVK_LeftArrow), modifiers: move, into: hotKeys)
+            seed(.moveRight, keyCode: Int(kVK_RightArrow), modifiers: move, into: hotKeys)
+        }
+        seedOnce(flag: Self.maximizeDefaultsInstalledKey) {
+            seed(.maximize, keyCode: Int(kVK_UpArrow), modifiers: tile, into: hotKeys)
+        }
     }
 
-    private func seedArrowPair(
-        flag: String, left: HotKeyAction, right: HotKeyAction,
-        modifiers: NSEvent.ModifierFlags, into hotKeys: HotKeyManager
-    ) {
+    private func seedOnce(flag: String, _ install: () -> Void) {
         guard !UserDefaults.standard.bool(forKey: flag) else { return }
         UserDefaults.standard.set(true, forKey: flag)
-        seed(left, keyCode: Int(kVK_LeftArrow), modifiers: modifiers, into: hotKeys)
-        seed(right, keyCode: Int(kVK_RightArrow), modifiers: modifiers, into: hotKeys)
+        install()
     }
 
     private func seed(

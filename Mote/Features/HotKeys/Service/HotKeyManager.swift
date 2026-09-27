@@ -5,6 +5,7 @@ import Foundation
 @Observable
 final class HotKeyManager {
     var onTogglePalette: (() -> Void)?
+    var onMaximize: (() -> Void)?
     var onTileLeft: (() -> Void)?
     var onTileRight: (() -> Void)?
     var onMoveLeft: (() -> Void)?
@@ -104,7 +105,8 @@ final class HotKeyManager {
             var set = Set(boundPaneBundleIDs)
             if binding == nil { set.remove(bundleID) } else { set.insert(bundleID) }
             UserDefaults.standard.set(Array(set), forKey: boundPaneKey)
-        case .togglePalette, .tileLeft, .tileRight, .moveLeft, .moveRight, .systemAction:
+        case .togglePalette, .maximize, .tileLeft, .tileRight, .moveLeft, .moveRight,
+            .systemAction:
             break
         }
         candidateActionsCache = nil
@@ -151,6 +153,8 @@ final class HotKeyManager {
         switch action {
         case .togglePalette:
             return "App Launcher"
+        case .maximize:
+            return "Maximize"
         case .tileLeft:
             return "Tile Left"
         case .tileRight:
@@ -187,6 +191,7 @@ final class HotKeyManager {
     private func perform(_ action: HotKeyAction) {
         switch action {
         case .togglePalette: onTogglePalette?()
+        case .maximize: onMaximize?()
         case .tileLeft: onTileLeft?()
         case .tileRight: onTileRight?()
         case .moveLeft: onMoveLeft?()

@@ -68,6 +68,7 @@ final class AppCore {
             hotKeys.doubleTapMonitor.healthTicker = healthTicker
 
             hotKeys.onTogglePalette = { [weak self] in self?.paletteCoordinator.togglePalette() }
+            hotKeys.onMaximize = { [weak self] in self?.windowTilingCoordinator.maximize() }
             hotKeys.onTileLeft = { [weak self] in self?.windowTilingCoordinator.tile(toward: .left) }
             hotKeys.onTileRight = { [weak self] in self?.windowTilingCoordinator.tile(toward: .right) }
             hotKeys.onMoveLeft = { [weak self] in self?.windowTilingCoordinator.move(toward: .left) }
@@ -113,7 +114,8 @@ final class AppCore {
         case .settingsPane(let bundleID):
             return appIndex.apps.first { $0.kind == .systemSettings && $0.bundleID == bundleID }?
                 .name
-        case .togglePalette, .tileLeft, .tileRight, .moveLeft, .moveRight, .systemAction:
+        case .togglePalette, .maximize, .tileLeft, .tileRight, .moveLeft, .moveRight,
+            .systemAction:
             return nil
         }
     }

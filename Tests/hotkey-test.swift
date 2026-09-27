@@ -104,9 +104,12 @@ struct DoubleTapDetectorTests {
             "every bindable command appears among the built-in hotkey actions")
         expect(
             HotKeyAction.builtInActions == [
-                .togglePalette, .tileLeft, .tileRight, .moveLeft, .moveRight
+                .togglePalette, .maximize, .tileLeft, .tileRight, .moveLeft, .moveRight
             ],
-            "built-ins are palette, tile left/right, move left/right")
+            "built-ins are palette, maximize, tile left/right, move left/right")
+        expect(
+            HotKeyAction.maximize.defaultsKey == "hotkey.window.maximize",
+            "maximize persists under hotkey.window.maximize")
         expect(
             HotKeyAction.tileLeft.defaultsKey == "hotkey.window.move",
             "tile left persists under hotkey.window.move")

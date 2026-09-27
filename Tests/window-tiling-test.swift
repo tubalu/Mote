@@ -18,9 +18,9 @@ enum WindowTilingTests {
     }
 
     static func main() {
-        tileRightShrinksFromFullAlongTheRightEdge()
-        tileLeftShrinksFromFullAlongTheLeftEdge()
-        notFlushJumpsToTwoThirdsOnThatEdge()
+        tileRightWalksTheChain()
+        tileLeftWalksTheChain()
+        offChainEntersAtTwoThirdsOnThatEdge()
         moveStepsTowardThePressedEdge()
         moveLeavesFullScreenUnchanged()
         detectsRightHalfFromGeometry()
@@ -29,50 +29,48 @@ enum WindowTilingTests {
         if failures > 0 { exit(1) }
     }
 
-    static func tileRightShrinksFromFullAlongTheRightEdge() {
-        var state = WindowTileState.full
+    static let leftHalf = WindowTileState(size: .half, align: .left)
+    static let leftTwoThirds = WindowTileState(size: .twoThirds, align: .left)
+    static let rightTwoThirds = WindowTileState(size: .twoThirds, align: .right)
+    static let rightHalf = WindowTileState(size: .half, align: .right)
+
+    static func tileRightWalksTheChain() {
+        var state = leftHalf
         state = WindowTiling.tiled(state, toward: .right)
-        expect(state == WindowTileState(size: .twoThirds, align: .right), "full → 2/3 right")
+        expect(state == leftTwoThirds, "left 1/2 + → → left 2/3")
         state = WindowTiling.tiled(state, toward: .right)
-        expect(state == WindowTileState(size: .half, align: .right), "2/3 right → 1/2 right")
+        expect(state == rightTwoThirds, "left 2/3 + → → right 2/3")
         state = WindowTiling.tiled(state, toward: .right)
-        expect(state == WindowTileState(size: .third, align: .right), "1/2 right → 1/3 right")
+        expect(state == rightHalf, "right 2/3 + → → right 1/2")
         state = WindowTiling.tiled(state, toward: .right)
-        expect(state == .full, "1/3 right → full")
+        expect(state == rightHalf, "right 1/2 + → stays")
     }
 
-    static func tileLeftShrinksFromFullAlongTheLeftEdge() {
-        var state = WindowTileState.full
+    static func tileLeftWalksTheChain() {
+        var state = rightHalf
         state = WindowTiling.tiled(state, toward: .left)
-        expect(state == WindowTileState(size: .twoThirds, align: .left), "full → 2/3 left")
+        expect(state == rightTwoThirds, "right 1/2 + ← → right 2/3")
         state = WindowTiling.tiled(state, toward: .left)
-        expect(state == WindowTileState(size: .half, align: .left), "2/3 left → 1/2 left")
+        expect(state == leftTwoThirds, "right 2/3 + ← → left 2/3")
         state = WindowTiling.tiled(state, toward: .left)
-        expect(state == WindowTileState(size: .third, align: .left), "1/2 left → 1/3 left")
+        expect(state == leftHalf, "left 2/3 + ← → left 1/2")
         state = WindowTiling.tiled(state, toward: .left)
-        expect(state == .full, "1/3 left → full")
+        expect(state == leftHalf, "left 1/2 + ← stays")
     }
 
-    static func notFlushJumpsToTwoThirdsOnThatEdge() {
-        let centerThird = WindowTileState(size: .third, align: .center)
-        expect(
-            WindowTiling.tiled(centerThird, toward: .right)
-                == WindowTileState(size: .twoThirds, align: .right),
-            "center 1/3 + → → 2/3 right")
-        expect(
-            WindowTiling.tiled(centerThird, toward: .left)
-                == WindowTileState(size: .twoThirds, align: .left),
-            "center 1/3 + ← → 2/3 left")
-        let leftHalf = WindowTileState(size: .half, align: .left)
-        expect(
-            WindowTiling.tiled(leftHalf, toward: .right)
-                == WindowTileState(size: .twoThirds, align: .right),
-            "left 1/2 + → → 2/3 right")
-        let rightHalf = WindowTileState(size: .half, align: .right)
-        expect(
-            WindowTiling.tiled(rightHalf, toward: .left)
-                == WindowTileState(size: .twoThirds, align: .left),
-            "right 1/2 + ← → 2/3 left")
+    static func offChainEntersAtTwoThirdsOnThatEdge() {
+        let offChain: [(WindowTileState, String)] = [
+            (.full, "full"),
+            (WindowTileState(size: .third, align: .center), "center 1/3"),
+            (WindowTileState(size: .third, align: .left), "left 1/3"),
+            (WindowTileState(size: .half, align: .center), "center 1/2"),
+        ]
+        for (state, name) in offChain {
+            expect(WindowTiling.tiled(state, toward: .left) == leftTwoThirds, "\(name) + ← → left 2/3")
+            expect(
+                WindowTiling.tiled(state, toward: .right) == rightTwoThirds,
+                "\(name) + → → right 2/3")
+        }
     }
 
     static func moveStepsTowardThePressedEdge() {
